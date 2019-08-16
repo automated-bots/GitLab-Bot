@@ -16,6 +16,8 @@ And thus eventually to serve the LBRY user (yes, you)!
 
 ## How?
 
+LBRY Bot is written in javascript (maybe TypeScript in the future) using [Node.js](https://nodejs.org/en/download/) with Express.
+
 LBRY Bot initually will use the [lbry-sdk](https://github.com/lbryio/lbry-sdk) in order to retrieve information from the LBRY (eg. blockchain status).
 
 Later the [lbrycrd](https://github.com/lbryio/lbrycrd) raw API and the more efficient [Chainquery](https://github.com/lbryio/chainquery) will be used to retrieve  more information from the LBRY eco-system.
@@ -28,4 +30,13 @@ Hi, it's me: Melroy van den Berg.
 
 Currently busy programming.... Please hold the line.
 
+## Developing
 
+Requirements:
+* [Node.js v10](https://nodejs.org/en/download/)
+* npm (package manager)
+
+```
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs npm
+``
