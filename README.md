@@ -8,7 +8,7 @@ A Botfather chat bot for LBRY. The one that rule them all!
 
 ## Why?
 
-LBRY Bot can be used in chat applications like [Telegram](https://telegram.org/apps) or Discord to parse requests from clients and return useful information about LBRY.
+LBRY Bot can be used in chat applications like IRC, [Telegram](https://telegram.org/apps) or Discord to parse requests from clients and return useful information about LBRY.
 
 This information could be anything like content, meta-data, network stats, address info, and much more!
 

@@ -72,7 +72,7 @@ I'll discuss the most important projects down below.
 
 ## lbry-sdk
 
-The easy-to-develop application from LBRY, it implements the LBRY protocol specification (except the blockchain protocol), extra components for developers and deamon that participates in the LBRY data network + API to interact with the protocol.
+Most applications typically use Lbry-sdk, it implements the LBRY protocol specification (except the blockchain protocol), extra components for developers, deamon that participates in the LBRY data network and most importantly the convenient API for building apps on top of LBRY.
 
 * [lbry-sdk API](https://lbry.tech/api/sdk) (using the lbry-sdk deamon API)
 * [Download librynet](https://github.com/lbryio/lbry-sdk/releases)
