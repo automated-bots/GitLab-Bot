@@ -36,15 +36,15 @@ app.listen(port, () => {
   console.log(`LBRY Bot service is listening on ${port}`)
 })
 
-//// Telegram bot commands ////
+/// / Telegram bot commands ////
 
 // status command
 bot.onText(/\/status/, msg => {
-  const chatId = msg.chat.id;
+  const chatId = msg.chat.id
 
   // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, "latest status!");
-});
+  bot.sendMessage(chatId, 'latest status!')
+})
 
 // echo command (/echo [whatever])
 bot.onText(/\/echo (.+)/, (msg, match) => {
@@ -52,16 +52,16 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   // 'match' is the result of executing the regexp above on the text content
   // of the message
 
-  const chatId = msg.chat.id;
-  const resp = match[1]; // the captured "whatever"
+  const chatId = msg.chat.id
+  const resp = match[1] // the captured "whatever"
 
   // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, resp);
-});
+  bot.sendMessage(chatId, resp)
+})
 
 // Other stuff
 bot.on('message', msg => {
-  if (msg.text.toString().toLowerCase().includes("bye")) {
-    bot.sendMessage(msg.chat.id, "Hope to see you around again, Bye!")
+  if (msg.text.toString().toLowerCase().includes('bye')) {
+    bot.sendMessage(msg.chat.id, 'Hope to see you around again, Bye!')
   }
 })
