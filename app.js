@@ -1,4 +1,5 @@
-const TOKEN = process.env.TELEGRAM_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN'
+process.env['NTBA_FIX_319'] = 1
+const TOKEN = process.env.TELEGRAM_TOKEN
 const url = 'https://lbry.melroy.org'
 const port = process.env.PORT || 3005
 
@@ -9,6 +10,10 @@ const bodyParser = require('body-parser')
 
 // No need to pass any parameters as we will handle the updates with Express
 // TODO: Only create a TelegramBot object, when bot server is enabled for serving Telegram requests
+if (TOKEN === undefined) {
+  console.error('\x1b[31mERROR: Provide your Telegram token, by setting the TELEGRAM_TOKEN enviroment variable first! See README.md.\nExit.\x1b[0m')
+  process.exit(1)
+}
 const bot = new TelegramBot(TOKEN)
 
 // This informs the Telegram servers of the new webhook.
@@ -27,7 +32,7 @@ app.post(`/bot${TOKEN}`, (req, res) => {
 
 // Start Express Server
 app.listen(port, () => {
-  console.log(`Express server is listening on ${port}`)
+  console.log(`LBRY Bot service is listening on ${port}`)
 })
 
 // Just to ping!

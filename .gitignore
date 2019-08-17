@@ -1,3 +1,6 @@
+# Secret tokens
+tokens.env
+
 # Logs
 logs
 *.log

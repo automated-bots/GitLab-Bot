@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "export $(cat tokens.env | xargs) && node app.js",
     "test": "echo \"TODO :D\"",
     "lint": "eslint . --ext .js",
     "fix": "eslint . --ext .js --fix"

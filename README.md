@@ -44,7 +44,15 @@ sudo apt-get install -y nodejs npm
 
 ### Starting
 
-Starting the bot server: `npm start` or `node app.js`
+Create & Fill-in the `tokens.env` file using the template (see also `tokens.env.example`):
+
+```sh
+TELEGRAM_TOKEN=xzy
+```
+
+Starting the bot server: `npm start` or by `node app.js`
+
+Reverse proxy (Nginx) is required to put between the bot and the WWW. Expose the server on port 443 (with SSL, eg. by using Let's Encrypt).
 
 ### Linting
 
