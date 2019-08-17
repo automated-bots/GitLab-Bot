@@ -44,15 +44,21 @@ sudo apt-get install -y nodejs npm
 
 ### Starting
 
-Create & Fill-in the `tokens.env` file using the template (see also `tokens.env.example`):
+| Chat Service  | Token env. name    | Obtain by                                    |
+| ------------- |:------------------:| --------------------------------------------:|
+| Telegram      | TELEGRAM_TOKEN     | [@bothfather](https://telegram.me/BotFather) |
+| Discord       | TODO               | -                                            |
+| IRC           | TODO               | -                                            |
+
+Create & Fill-in the applicable tokens in `tokens.env` file, by using the template (see [tokens.env.example](tokens.env.example)):
 
 ```sh
 TELEGRAM_TOKEN=xzy
 ```
 
-Starting the bot server: `npm start` or by `node app.js`
+Starting the bot server: `npm start` (or `node app.js`)
 
-Reverse proxy (Nginx) is required to put between the bot and the WWW. Expose the server on port 443 (with SSL, eg. by using Let's Encrypt).
+**Hint:** Reverse proxy (eg. Nginx) is required to put between the bot and the WWW. Expose the webserver on port 443 (with SSL). See [nginx_example.conf](nginx_example.conf).
 
 ### Linting
 

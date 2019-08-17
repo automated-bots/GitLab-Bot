@@ -109,3 +109,9 @@ The **official** implementation of the LBRY blockchain protocol. The core of LBR
 
 * Undocumented API (get # views from a file): `https://api.lbry.com/file/view_count?auth_token=abcd&claim_id=wxyz`
 * [Special Github repo with all kind of Python scripts](https://github.com/eggplantbren/LBRYnomics/blob/master/fetch_data.py#L137) - like the view count per channel/ summing-up the views per video.
+
+## Telegram bot
+
+To simply interaction with Telegram on NodeJS, we are using node-telegram-bot-api package.
+
+* [Node Telegram bot API tut](https://github.com/hosein2398/node-telegram-bot-api-tutorial)
