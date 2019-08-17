@@ -30,7 +30,7 @@ Hi, it's me: Melroy van den Berg.
 
 Currently busy programming.... Please hold the line.
 
-## Developing
+## Develop
 
 Requirements:
 
@@ -42,7 +42,7 @@ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs npm
 ```
 
-### Starting
+### Running
 
 | Chat Service  | Token env. name    | Obtain by                                    |
 | ------------- |:------------------:| --------------------------------------------:|
@@ -53,12 +53,12 @@ sudo apt-get install -y nodejs npm
 Create & Fill-in the applicable tokens in `tokens.env` file, by using the template (see [tokens.env.example](tokens.env.example)):
 
 ```sh
-TELEGRAM_TOKEN=xzy
+TELEGRAM_TOKEN=xyz
 ```
 
-Starting the bot server: `npm start` (or `node app.js`)
+Finally, starting the bot server: `npm start` (or `node app.js`)
 
-**Hint:** Reverse proxy (eg. Nginx) is required to put between the bot and the WWW. Expose the webserver on port 443 (with SSL). See [nginx_example.conf](nginx_example.conf).
+**Hint:** Reverse proxy (eg. Nginx) is required to put between the bot and the world-wide-web. Expose the webserver on port 443 (with SSL). See [nginx_example.conf](nginx_example.conf).
 
 ### Linting
 
