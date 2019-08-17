@@ -33,10 +33,21 @@ Currently busy programming.... Please hold the line.
 ## Developing
 
 Requirements:
+
 * [Node.js v10](https://nodejs.org/en/download/)
 * npm (package manager)
 
 ```
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs npm
-``
+```
+
+### Starting
+
+Starting the bot server: `npm start` or `node app.js`
+
+### Linting
+
+Run lint: `npm run lint`
+
+Fix lint issues: `npm run fix`

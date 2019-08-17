@@ -7,7 +7,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"TODO :D\""
+    "start": "node app.js",
+    "test": "echo \"TODO :D\"",
+    "lint": "eslint . --ext .js",
+    "fix": "eslint . --ext .js --fix"
   },
   "repository": {
     "type": "git",
@@ -29,5 +32,13 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
