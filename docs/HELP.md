@@ -105,4 +105,7 @@ The **official** implementation of the LBRY blockchain protocol. The core of LBR
 * [lbrycrd spec doc](lbry-spec.pdf)
 * [lbrycrd API](https://lbry.tech/api/blockchain) (using the lbrycrd daemon API)
 
+## Undocumented API's
+
+Get views from a single file: `https://api.lbry.com/file/view_count?auth_token=abcd&claim_id=wxyz`
 
