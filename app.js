@@ -19,6 +19,7 @@ const bot = new TelegramBot(TOKEN)
 // This informs the Telegram servers of the new webhook.
 bot.setWebHook(`${url}/bot${TOKEN}`)
 
+// Create the Express app
 const app = express()
 
 // parse the updates to JSON
@@ -30,12 +31,37 @@ app.post(`/bot${TOKEN}`, (req, res) => {
   res.sendStatus(200)
 })
 
-// Start Express Server
+// Start server
 app.listen(port, () => {
   console.log(`LBRY Bot service is listening on ${port}`)
 })
 
-// Just to ping!
+//// Telegram bot commands ////
+
+// status command
+bot.onText(/\/status/, msg => {
+  const chatId = msg.chat.id;
+
+  // send back the matched "whatever" to the chat
+  bot.sendMessage(chatId, "latest status!");
+});
+
+// echo command (/echo [whatever])
+bot.onText(/\/echo (.+)/, (msg, match) => {
+  // 'msg' is the received Message from Telegram
+  // 'match' is the result of executing the regexp above on the text content
+  // of the message
+
+  const chatId = msg.chat.id;
+  const resp = match[1]; // the captured "whatever"
+
+  // send back the matched "whatever" to the chat
+  bot.sendMessage(chatId, resp);
+});
+
+// Other stuff
 bot.on('message', msg => {
-  bot.sendMessage(msg.chat.id, 'I am alive!')
+  if (msg.text.toString().toLowerCase().includes("bye")) {
+    bot.sendMessage(msg.chat.id, "Hope to see you around again, Bye!")
+  }
 })
