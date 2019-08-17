@@ -105,7 +105,7 @@ The **official** implementation of the LBRY blockchain protocol. The core of LBR
 * [lbrycrd spec doc](lbry-spec.pdf)
 * [lbrycrd API](https://lbry.tech/api/blockchain) (using the lbrycrd daemon API)
 
-## Undocumented API's
+## Undocumented API's and other stuff
 
-Get views from a single file: `https://api.lbry.com/file/view_count?auth_token=abcd&claim_id=wxyz`
-
+* Undocumented API (get # views from a file): `https://api.lbry.com/file/view_count?auth_token=abcd&claim_id=wxyz`
+* [Special Github repo with all kind of Python scripts](https://github.com/eggplantbren/LBRYnomics/blob/master/fetch_data.py#L137) - like the view count per channel/ summing-up the views per video.
