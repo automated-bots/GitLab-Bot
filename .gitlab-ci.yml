@@ -1,0 +1,7 @@
+
+lint:
+  stage: test
+  tags:
+  - test
+  script:
+  - npm run lint
