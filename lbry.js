@@ -24,12 +24,12 @@ class LBRY {
   }
 
   /**
-   * Get account balance amount from provided account_id
+   * Get account balance (in LBC) from provided account_id
    *
    * @param {string} id - Account ID
    * @return {Promise} Axios promise
    */
-  getAmount (id) {
+  getBalance (id) {
     return this.lbrynet.post('/', {
       method: 'account_balance',
       params: {

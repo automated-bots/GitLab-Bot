@@ -36,6 +36,7 @@ Requirements:
 
 * [Node.js v10](https://nodejs.org/en/download/)
 * npm (package manager)
+* [Lbrynet deamon](https://github.com/lbryio/lbry-sdk/releases)
 
 ```
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
@@ -58,7 +59,8 @@ TELEGRAM_TOKEN=xyz
 
 Finally, starting the bot server: `npm start` (or `node app.js`)
 
-**Hint:** Reverse proxy (eg. Nginx) is required to put between the bot and the world-wide-web. Expose the webserver on port 443 (with SSL). See [nginx_example.conf](nginx_example.conf).
+**Note 1:** Reverse proxy (eg. Nginx) is required to put between the bot and the world-wide-web. Expose the webserver on port 443 (with SSL). See [nginx_example.conf](nginx_example.conf).
+**Note 2:** Assuming you are running the lbrynet deamon (see requirements).
 
 ### Linting
 

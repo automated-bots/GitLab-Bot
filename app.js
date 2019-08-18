@@ -49,7 +49,7 @@ bot.onText(/\/help/, msg => {
   const helpText = `
 /help - Return this help output
 /status - Retrieve Lbrynet status
-/amount <account_id> - Get your wallet balance by providing your account ID as argument
+/balance <account_id> - Get your wallet balance by providing your account ID as argument
 /myaddress <account_id> <address> - Check if given adddress belongs to you
 `
   bot.sendMessage(chatId, helpText)
@@ -57,10 +57,11 @@ bot.onText(/\/help/, msg => {
 
 // status command
 bot.onText(/\/status/, msg => {
+  const chatId = msg.chat.id
+
   lbry.getStatus()
     .then(result => {
       if (result) {
-        const chatId = msg.chat.id
         // const textMsg = JSON.stringify(result)
         const textMsg = `
 Lbrynet deamon running: ${result.is_running}
@@ -69,22 +70,23 @@ Connection: ${result.connection_status.code}`
       }
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
+      bot.sendMessage(chatId, 'Error: Can\'t connect to Lbrynet server!')
     })
 })
 
-// bad-weather amount command (only /amount or /amount@bot_name without parameters)
-bot.onText(/^\/amount\S*$/, msg => {
+// bad-weather balance command (only /balance or /balance@bot_name without parameters)
+bot.onText(/^\/balance\S*$/, msg => {
   const chatId = msg.chat.id
-  bot.sendMessage(chatId, 'Error: Provide atleast your account ID as argument: /amount <account_id>')
+  bot.sendMessage(chatId, 'Error: Provide atleast your account ID as argument: /balance <account_id>')
 })
 
-// amount command (/amount <account_id>)
-// TODO: "\@?\S*" should only match /amount or /amount@bot_name and *NOT* match /amountblabla for example
-bot.onText(/\/amount@?\S* (.+)/, (msg, match) => {
+// balance command (/balance <account_id>)
+// TODO: "\@?\S*" should only match /balance or /balance@bot_name and *NOT* match /balancebkabla for example
+bot.onText(/\/balance@?\S* (.+)/, (msg, match) => {
   const chatId = msg.chat.id
   const accountId = match[1]
-  lbry.getAmount(accountId)
+  lbry.getBalance(accountId)
     .then(result => {
       if (result) {
         const chatId = msg.chat.id
@@ -99,7 +101,7 @@ Total amount (incl. reserved): ${total} LBC`
       }
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
     })
 })
 
@@ -123,7 +125,7 @@ bot.onText(/\/myaddress@?\S* (.+) (.+)/, (msg, match) => {
       }
     })
     .catch(error => {
-      console.log(error)
+      console.error(error)
     })
 })
 
