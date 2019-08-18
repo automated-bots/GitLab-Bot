@@ -60,6 +60,7 @@ TELEGRAM_TOKEN=xyz
 Finally, starting the bot server: `npm start` (or `node app.js`)
 
 **Note 1:** Reverse proxy (eg. Nginx) is required to put between the bot and the world-wide-web. Expose the webserver on port 443 (with SSL). See [nginx_example.conf](nginx_example.conf).
+
 **Note 2:** Assuming you are running the lbrynet deamon (see requirements).
 
 ### Linting

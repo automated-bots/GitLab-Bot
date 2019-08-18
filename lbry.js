@@ -4,7 +4,7 @@ class LBRY {
   constructor (lbrynetHost, lbrynetPort) {
     this.lbrynet = axios.create({
       baseURL: 'http://' + lbrynetHost + ':' + lbrynetPort,
-      timeout: 1000
+      timeout: 10000
     })
   }
 
@@ -13,7 +13,7 @@ class LBRY {
    *
    * @return {Promise} Axios promise
    */
-  getStatus () {
+  getLbryNetStatus () {
     return this.lbrynet.post('/', {
       method: 'status',
       params: {}
@@ -24,37 +24,17 @@ class LBRY {
   }
 
   /**
-   * Get account balance (in LBC) from provided account_id
+   * Get content information by providing the uri
    *
-   * @param {string} id - Account ID
+   * @param {string} uri_address - uri
    * @return {Promise} Axios promise
    */
-  getBalance (id) {
+  getMetaFileData (uri_address) {
     return this.lbrynet.post('/', {
-      method: 'account_balance',
+      method: 'get',
       params: {
-        account_id: id,
-        reserved_subtotals: false
-      }
-    })
-      .then(response => {
-        return Promise.resolve(response.data.result)
-      })
-  }
-
-  /**
-   * Validate if this is your addresss
-   *
-   * @param {string} id - Account ID
-   * @param {string} address - Account ID
-   * @return {Promise} Axios promise
-   */
-  isMyAddress (id, addr) {
-    return this.lbrynet.post('/', {
-      method: 'address_is_mine',
-      params: {
-        account_id: id,
-        address: addr
+        uri: uri_address,
+        save_file: false
       }
     })
       .then(response => {

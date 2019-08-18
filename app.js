@@ -1,4 +1,5 @@
 process.env['NTBA_FIX_319'] = 1
+process.env['NTBA_FIX_350'] = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const LBRYNET_HOST = 'localhost'
@@ -49,8 +50,7 @@ bot.onText(/\/help/, msg => {
   const helpText = `
 /help - Return this help output
 /status - Retrieve Lbrynet status
-/balance <account_id> - Get your wallet balance by providing your account ID as argument
-/myaddress <account_id> <address> - Check if given adddress belongs to you
+/fileinfo <uri> - Get meta file content
 `
   bot.sendMessage(chatId, helpText)
 })
@@ -59,7 +59,7 @@ bot.onText(/\/help/, msg => {
 bot.onText(/\/status/, msg => {
   const chatId = msg.chat.id
 
-  lbry.getStatus()
+  lbry.getLbryNetStatus()
     .then(result => {
       if (result) {
         // const textMsg = JSON.stringify(result)
@@ -75,54 +75,31 @@ Connection: ${result.connection_status.code}`
     })
 })
 
-// bad-weather balance command (only /balance or /balance@bot_name without parameters)
-bot.onText(/^\/balance\S*$/, msg => {
+bot.onText(/^\/fileinfo\S*$/, msg => {
   const chatId = msg.chat.id
-  bot.sendMessage(chatId, 'Error: Provide atleast your account ID as argument: /balance <account_id>')
+  bot.sendMessage(chatId, 'Error: Provide atleast the URI as argument: /fileinfo <uri>')
 })
 
-// balance command (/balance <account_id>)
-// TODO: "\@?\S*" should only match /balance or /balance@bot_name and *NOT* match /balancebkabla for example
-bot.onText(/\/balance@?\S* (.+)/, (msg, match) => {
-  const chatId = msg.chat.id
-  const accountId = match[1]
-  lbry.getBalance(accountId)
-    .then(result => {
-      if (result) {
-        const chatId = msg.chat.id
-        const available = parseFloat(result.available).toFixed(4)
-        const total = parseFloat(result.total).toFixed(4)
-        const textMsg = `
-Available amount: ${available} LBC
-Total amount (incl. reserved): ${total} LBC`
-        bot.sendMessage(chatId, textMsg)
-      } else {
-        bot.sendMessage(chatId, 'Account ID not found, provide a valid account ID. Try again.')
-      }
-    })
-    .catch(error => {
-      console.error(error)
-    })
-})
-
-// bad-weather myadress command (only /myadress or /myadress@bot_name without parameters)
-bot.onText(/^\/myaddress\S*$/, msg => {
-  const chatId = msg.chat.id
-  bot.sendMessage(chatId, 'Error: Provide atleast the following two parameters: /myaddress <account_id> <address>')
-})
-
-// myadress command (/myaddress <account_id> <address>)
-bot.onText(/\/myaddress@?\S* (.+) (.+)/, (msg, match) => {
-  const accountId = match[1]
-  const address = match[2]
-  lbry.isMyAddress(accountId, address)
+// fileinfo command (/fileinfo <uri>)
+bot.onText(/\/fileinfo@?\S* (.+)/, (msg, match) => {
+  const uri = match[1]
+  lbry.getMetaFileData(uri)
     .then(result => {
       const chatId = msg.chat.id
-      if (result) {
-        bot.sendMessage(chatId, 'Address is yours!')
-      } else {
-        bot.sendMessage(chatId, 'Nope, this address belongs not to you')
-      }
+      const title = result.metadata.title
+      const thumbnail = result.metadata.thumbnail.url
+      const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
+      const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
+      const publicURL = 'https://beta.lbry.tv/' + uriWithoutProtocol
+      const textMsg = `
+Title: ${title}
+Channel name: ${result.channel_name}
+Media Type: ${result.metadata.source.media_type}
+Size: ${fileSize} MB
+Watch Online: ${publicURL}`
+      bot.sendMessage(chatId, textMsg)
+      if(thumbnail)
+        bot.sendPhoto(chatId, thumbnail, {'caption': 'Thumbnail: ' + title})
     })
     .catch(error => {
       console.error(error)
