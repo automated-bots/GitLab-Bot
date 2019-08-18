@@ -50,6 +50,7 @@ bot.onText(/\/help/, msg => {
 /help - Return this help output
 /status - Retrieve Lbrynet status
 /amount <account_id> - Get your wallet balance by providing your account ID as argument
+/myaddress <account_id> <address> - Check if given adddress belongs to you
 `
   bot.sendMessage(chatId, helpText)
 })
@@ -80,7 +81,7 @@ bot.onText(/^\/amount\S*$/, msg => {
 })
 
 // amount command (/amount <account_id>)
-// TODO: "\@?\S*" should only match /amount or /amount@blabla and *NOT* match /amountblabla for example
+// TODO: "\@?\S*" should only match /amount or /amount@bot_name and *NOT* match /amountblabla for example
 bot.onText(/\/amount\@?\S* (.+)/, (msg, match) => {
   const chatId = msg.chat.id
   const account_id = match[1]
@@ -99,6 +100,34 @@ Total amount (incl. reserved): ${total} LBC`
     else
     {
       bot.sendMessage(chatId, "Account ID not found, provide a valid account ID. Try again.")
+    }
+  })
+  .catch(error => {
+    console.log(error)
+  })
+})
+
+// bad-weather myadress command (only /myadress or /myadress@bot_name without parameters)
+bot.onText(/^\/myaddress\S*$/, msg => {
+  const chatId = msg.chat.id
+  bot.sendMessage(chatId, "Error: Provide atleast the following two parameters: /myaddress <account_id> <address>")
+})
+
+// myadress command (/myaddress <account_id> <address>)
+bot.onText(/\/myaddress\@?\S* (.+) (.+)/, (msg, match) => {
+  const chatId = msg.chat.id
+  const account_id = match[1]
+  const address = match[2]
+  lbry.myaddress(account_id, address)
+  .then(result => {
+    const chatId = msg.chat.id
+    if(result)
+    {
+      bot.sendMessage(chatId, "Address is yours!")
+    }
+    else
+    {
+      bot.sendMessage(chatId, "Nope, this address belongs not to you")
     }
   })
   .catch(error => {

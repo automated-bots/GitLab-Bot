@@ -31,5 +31,18 @@ class LBRY {
       return Promise.resolve(response.data.result)
     })
   }
+
+  myaddress(id, addr) {
+    return this.lbrynet.post('/', {
+      method: 'address_is_mine',
+      params: {
+        account_id: id,
+        address: addr
+      }
+    })
+    .then(response => {
+      return Promise.resolve(response.data.result)
+    })
+  }
 }
 module.exports = LBRY;
