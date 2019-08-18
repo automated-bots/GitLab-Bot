@@ -1,23 +1,28 @@
 process.env['NTBA_FIX_319'] = 1
-const TOKEN = process.env.TELEGRAM_TOKEN
-const url = 'https://lbry.melroy.org'
+// constants
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
+const LBRYNET_HOST = "localhost"
+const LBRYNET_PORT = 5279
+const bot_url = 'https://lbry.melroy.org'
 const port = process.env.PORT || 3005
 
 const TelegramBot = require('node-telegram-bot-api')
 const express = require('express')
-// const axios = require('axios') // Promise bassed HTTP client (eg. for sending post reqs)
 const bodyParser = require('body-parser')
+const LBRY = require('./lbry')
+
+const lbry = new LBRY(LBRYNET_HOST, LBRYNET_PORT)
 
 // No need to pass any parameters as we will handle the updates with Express
 // TODO: Only create a TelegramBot object, when bot server is enabled for serving Telegram requests
-if (TOKEN === undefined) {
+if (TELEGRAM_TOKEN === undefined) {
   console.error('\x1b[31mERROR: Provide your Telegram token, by setting the TELEGRAM_TOKEN enviroment variable first! See README.md.\nExit.\x1b[0m')
   process.exit(1)
 }
-const bot = new TelegramBot(TOKEN)
+const bot = new TelegramBot(TELEGRAM_TOKEN)
 
 // This informs the Telegram servers of the new webhook.
-bot.setWebHook(`${url}/bot${TOKEN}`)
+bot.setWebHook(`${bot_url}/bot${TELEGRAM_TOKEN}`)
 
 // Create the Express app
 const app = express()
@@ -26,7 +31,7 @@ const app = express()
 app.use(bodyParser.json())
 
 // We are receiving updates at the route below!
-app.post(`/bot${TOKEN}`, (req, res) => {
+app.post(`/bot${TELEGRAM_TOKEN}`, (req, res) => {
   bot.processUpdate(req.body)
   res.sendStatus(200)
 })
@@ -38,25 +43,67 @@ app.listen(port, () => {
 
 /// / Telegram bot commands ////
 
-// status command
-bot.onText(/\/status/, msg => {
+// help command - show available commands
+bot.onText(/\/help/, msg => {
   const chatId = msg.chat.id
-
-  // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, 'latest status!')
+  const helpText = `
+/help - Return this help output
+/status - Retrieve Lbrynet status
+/amount <account_id> - Get your wallet balance by providing your account ID as argument
+`
+  bot.sendMessage(chatId, helpText)
 })
 
-// echo command (/echo [whatever])
-bot.onText(/\/echo (.+)/, (msg, match) => {
-  // 'msg' is the received Message from Telegram
-  // 'match' is the result of executing the regexp above on the text content
-  // of the message
+// status command
+bot.onText(/\/status/, msg => {
+  lbry.status()
+  .then(result => {
+    if(result)
+    {
+      const chatId = msg.chat.id
+      // const textMsg = JSON.stringify(result)
+      const textMsg = `
+Lbrynet deamon running: ${result.is_running}
+Connection: ${result.connection_status.code}`
+      bot.sendMessage(chatId, textMsg)
+    }
+  })
+  .catch(error => {
+    console.log(error)
+  })
+})
 
+// bad-weather amount command (only /amount or /amount@bot_name without parameters)
+bot.onText(/^\/amount\S*$/, msg => {
   const chatId = msg.chat.id
-  const resp = match[1] // the captured "whatever"
+  bot.sendMessage(chatId, "Error: Provide atleast your account ID as argument: /amount <account_id>")
+})
 
-  // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, resp)
+// amount command (/amount <account_id>)
+// TODO: "\@?\S*" should only match /amount or /amount@blabla and *NOT* match /amountblabla for example
+bot.onText(/\/amount\@?\S* (.+)/, (msg, match) => {
+  const chatId = msg.chat.id
+  const account_id = match[1]
+  lbry.amount(account_id)
+  .then(result => {
+    if(result)
+    {
+      const chatId = msg.chat.id
+      const available = parseFloat(result.available).toFixed(4)
+      const total = parseFloat(result.total).toFixed(4)
+      const textMsg = `
+Available amount: ${available} LBC
+Total amount (incl. reserved): ${total} LBC`
+      bot.sendMessage(chatId, textMsg)
+    }
+    else
+    {
+      bot.sendMessage(chatId, "Account ID not found, provide a valid account ID. Try again.")
+    }
+  })
+  .catch(error => {
+    console.log(error)
+  })
 })
 
 // Other stuff (requires 'Disable' privacy in Telegram bot by botfather when bot is in group)
