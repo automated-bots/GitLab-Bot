@@ -1,25 +1,35 @@
 const axios = require('axios')
 
 class LBRY {
-
-  constructor(lbrynet_host, lbrynet_port) {
+  constructor (lbrynetHost, lbrynetPort) {
     this.lbrynet = axios.create({
-      baseURL: 'http://' + lbrynet_host + ':' + lbrynet_port,
+      baseURL: 'http://' + lbrynetHost + ':' + lbrynetPort,
       timeout: 1000
     })
   }
 
-  status() {
+  /**
+   * Retrieve LBRYNET deamon information
+   *
+   * @return {Promise} Axios promise
+   */
+  getStatus () {
     return this.lbrynet.post('/', {
       method: 'status',
       params: {}
     })
-    .then(response => {
-      return Promise.resolve(response.data.result)
-    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
   }
 
-  amount(id) {
+  /**
+   * Get account balance amount from provided account_id
+   *
+   * @param {string} id - Account ID
+   * @return {Promise} Axios promise
+   */
+  getAmount (id) {
     return this.lbrynet.post('/', {
       method: 'account_balance',
       params: {
@@ -27,12 +37,19 @@ class LBRY {
         reserved_subtotals: false
       }
     })
-    .then(response => {
-      return Promise.resolve(response.data.result)
-    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
   }
 
-  myaddress(id, addr) {
+  /**
+   * Validate if this is your addresss
+   *
+   * @param {string} id - Account ID
+   * @param {string} address - Account ID
+   * @return {Promise} Axios promise
+   */
+  isMyAddress (id, addr) {
     return this.lbrynet.post('/', {
       method: 'address_is_mine',
       params: {
@@ -40,9 +57,9 @@ class LBRY {
         address: addr
       }
     })
-    .then(response => {
-      return Promise.resolve(response.data.result)
-    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
   }
 }
-module.exports = LBRY;
+module.exports = LBRY
