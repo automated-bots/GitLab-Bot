@@ -29,11 +29,11 @@ class LBRY {
    * @param {string} uri_address - uri
    * @return {Promise} Axios promise
    */
-  getMetaFileData (uri_address) {
+  getMetaFileData (uriAddress) {
     return this.lbrynet.post('/', {
       method: 'get',
       params: {
-        uri: uri_address,
+        uri: uriAddress,
         save_file: false
       }
     })

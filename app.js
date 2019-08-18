@@ -98,8 +98,7 @@ Media Type: ${result.metadata.source.media_type}
 Size: ${fileSize} MB
 Watch Online: ${publicURL}`
       bot.sendMessage(chatId, textMsg)
-      if(thumbnail)
-        bot.sendPhoto(chatId, thumbnail, {'caption': 'Thumbnail: ' + title})
+      if (thumbnail) { bot.sendPhoto(chatId, thumbnail, { caption: 'Thumbnail: ' + title }) }
     })
     .catch(error => {
       console.error(error)
