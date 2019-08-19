@@ -1,4 +1,5 @@
 const axios = require('axios')
+const qs = require('qs')
 
 class LBRY {
   constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, RPCUser, RPCPass) {
@@ -13,6 +14,10 @@ class LBRY {
         username: RPCUser,
         password: RPCPass
       }
+    })
+    this.chainquery = axios.create({
+      baseURL: 'https://chainquery.lbry.com/api/sql?',
+      timeout: 10000
     })
   }
 
@@ -52,7 +57,6 @@ class LBRY {
 
   /**
    * Get blockchain info
-   *   curl --user lbry --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getblockchaininfo", "params": [] }' -H 'content-type: text/plain;' http://127.0.0.1:9245/
    * @return {Promise} Axios promise
    */
   getBlockChainInfo () {
@@ -80,6 +84,18 @@ class LBRY {
     })
       .then(response => {
         return Promise.resolve(response.data.result)
+      })
+  }
+
+  /**
+   * Get address info
+   * @return {Promise} Axios promise (id & balance)
+   */
+  getAddressInfo (address) {
+    const query = 'SELECT id, balance FROM address WHERE address= "' + address + '" LIMIT 1'
+    return this.chainquery.get(qs.stringify({ 'query': query }))
+      .then(response => {
+        return Promise.resolve(response.data.data)
       })
   }
 }

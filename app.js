@@ -154,10 +154,28 @@ Median time current best block: ${result.mediantime}`
     })
 })
 
-// Other stuff (requires 'Disable' privacy in Telegram bot by botfather when bot is in group)
+// Balance command (/balance <address>)
+bot.onText(/\/balance@?\S* (.+)/, (msg, match) => {
+  const address = match[1]
+  lbry.getAddressInfo(address)
+    .then(result => {
+      const chatId = msg.chat.id
+      const text = `
+Balance: ${result.balance}}`
+      bot.sendMessage(chatId, text)
+    })
+    .catch(error => {
+      console.error(error)
+    })
+})
+
+// Other stuff
 bot.on('message', msg => {
   if (msg.text) {
-    if (msg.text.toString().toLowerCase().includes('bye')) {
+    if (msg.text.toString().toLowerCase().includes('hello')) {
+      const name = msg.from.first_name
+      bot.sendMessage(msg.chat.id, 'Welcome ' + name + '!')
+    } else if (msg.text.toString().toLowerCase().includes('bye')) {
       const name = msg.from.first_name
       bot.sendMessage(msg.chat.id, 'Hope to see you around again, <b>Bye ' + name + '</b>!', { parse_mode: 'HTML' })
     }
