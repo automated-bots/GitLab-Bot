@@ -161,6 +161,8 @@ bot.onText(/\/address@?\S* (.+)/, (msg, match) => {
       const chatId = msg.chat.id
       if (result.length > 0) {
         const text = `
+  Created at: ${result[0].created_at}
+  Modified at: ${result[0].modified_at}
   Balance: ${result[0].balance}}`
         bot.sendMessage(chatId, text)
       }

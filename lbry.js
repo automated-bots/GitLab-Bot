@@ -92,7 +92,7 @@ class LBRY {
    * @return {Promise} Axios promise (id & balance)
    */
   getAddressInfo (address) {
-    const query = 'SELECT id, balance FROM address WHERE address= "' + address + '" LIMIT 1'
+    const query = 'SELECT id, balance, created_at, modified_at FROM address WHERE address= "' + address + '" LIMIT 1'
     return this.chainquery.get(qs.stringify({ query: query }))
       .then(response => {
         return Promise.resolve(response.data.data)
