@@ -153,8 +153,8 @@ Median time current best block: ${result.mediantime}`
     })
 })
 
-// Balance command (/balance <address>)
-bot.onText(/\/balance@?\S* (.+)/, (msg, match) => {
+// address command (/address <address>)
+bot.onText(/\/address@?\S* (.+)/, (msg, match) => {
   const address = match[1]
   lbry.getAddressInfo(address)
     .then(result => {
