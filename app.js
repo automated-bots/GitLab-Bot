@@ -55,9 +55,11 @@ bot.onText(/[\/|!]help/, msg => {
   const helpText = `
 /help - Return this help output
 /status - Retrieve Lbrynet status
-/fileinfo <uri> - Get meta file content
+/file <uri> - Get meta file content
 /networkinfo - Get LBRY Network info
 /stats - Get blockchain, mining and exchange stats
+/address <address> - Get address info
+/transactions <address> - Get transactions from a specific address
 `
   bot.sendMessage(chatId, helpText)
 })
@@ -89,11 +91,17 @@ bot.onText(/^[\/|!]file\S*$/, msg => {
 
 // fileinfo command (/file <uri>)
 bot.onText(/[\/|!]file@?\S* (.+)/, (msg, match) => {
-  const uri = match[1]
+  const uri = match[1].trim()
   lbry.getMetaFileData(uri)
     .then(result => {
       const chatId = msg.chat.id
       const title = result.metadata.title
+      let duration = 'N/A'
+      if(result.metadata.video.duration) {
+        const duration_mins = Math.floor(parseFloat(result.metadata.video.duration)/60)
+        const duration_secs = (((parseFloat(result.metadata.video.duration)/60) % 2) * 60).toFixed(0)
+        duration = `${duration_mins}m ${duration_secs}s`
+      }
       const thumbnail = result.metadata.thumbnail.url
       const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
       const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
@@ -102,6 +110,7 @@ bot.onText(/[\/|!]file@?\S* (.+)/, (msg, match) => {
 Title: ${title}
 Channel name: ${result.channel_name}
 Media Type: ${result.metadata.source.media_type}
+Duration: ${duration}
 Size: ${fileSize} MB
 Watch Online: ${publicURL}`
       bot.sendMessage(chatId, textMsg)
@@ -125,8 +134,7 @@ Minimum relay fee:  ${result.relayfee} LBC/kB
 Minimum incremental fee: ${result.incrementalfee} LBC/kB
 Networks:`
       const networks = result.networks
-      var i
-      for (i = 0; i < networks.length; i++) {
+      for (let i = 0; i < networks.length; i++) {
         text += `
     Name: ${networks[i].name}
     Only net: ${networks[i].limited}
@@ -183,11 +191,86 @@ Market cap: ${exchange_result.market_cap}
     })
 })
 
-// Other stuff (requires 'Disable' privacy in Telegram bot by botfather when bot is in group)
+// address command (/address <address>)
+bot.onText(/[\/|!]address@?\S* (.+)/, (msg, match) => {
+  const address = match[1].trim()
+  lbry.getAddressInfo(address)
+    .then(result => {
+      const chatId = msg.chat.id
+      if (result.length > 0) {
+        const balance = parseFloat(result[0].balance).toFixed(8)
+        const text = `
+Created at: ${result[0].created_at}
+Modified at: ${result[0].modified_at}
+Balance: ${balance} LBC`
+        bot.sendMessage(chatId, text)
+      }
+      else
+      {
+        bot.sendMessage(chatId, 'Address is not (yet) used.')
+      }
+    })
+    .catch(error => {
+      console.error(error)
+    })
+})
+
+// transactions command (/transactions <address>)
+bot.onText(/[\/|!]transactions@?\S* (.+)/, (msg, match) => {
+  const address = match[1].trim()
+  lbry.getAddressInfo(address)
+    .then(result => {
+      if(result.length > 0)
+      {
+        lbry.getTransactions(result[0].id)
+          .then(list => {
+            const chatId = msg.chat.id
+            let text = 'Last 15 transactions:\n'
+            if (list.length > 0) {
+              for (let i = 0; i < list.length; i++) {
+                let amount = ''
+                if (list[i].credit_amount !== '0.00000000') {
+                  amount = parseFloat(list[i].credit_amount).toFixed(8)
+                } else {
+                  amount = '-' + parseFloat(list[i].debit_amount).toFixed(8)
+                }
+                text += `
+    Hash: ${list[i].hash}
+    Amount: ${amount} LBC
+    Timestamp: ${list[i].created_time}
+    Transaction link: https://explorer.lbry.com/tx/${list[i].hash}?address=${address}#${address}
+    ----------------------`
+              }
+              bot.sendMessage(chatId, text)
+            } else {
+              bot.sendMessage(chatId, 'No transactions found (yet)')
+            }
+          })
+          .catch(error => {
+            console.error(error)
+          })
+      }
+      else
+      {
+        bot.sendMessage(chatId, 'Address not found')
+      }
+    })
+    .catch(error => {
+      console.error(error)
+    })
+})
+
+// Other stuff
 bot.on('message', msg => {
   if (msg.text) {
-    if (msg.text.toString().toLowerCase().includes('bye')) {
-      const name = msg.from.first_name
+    const name = msg.from.first_name
+    if (msg.text.toString() === '!' || msg.text.toString() === '/') {
+      bot.sendMessage(msg.chat.id, 'Please use /help or !help to get more info.')
+    }
+    else if (msg.text.toString().toLowerCase().includes('hello')) {
+      bot.sendMessage(msg.chat.id, 'Welcome ' + name + '!')
+    }
+    else if (msg.text.toString().toLowerCase().includes('bye')) {
       bot.sendMessage(msg.chat.id, 'Hope to see you around again, <b>Bye ' + name + '</b>!', { parse_mode: 'HTML' })
     }
   }

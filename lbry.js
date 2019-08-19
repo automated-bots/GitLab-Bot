@@ -1,4 +1,5 @@
 const axios = require('axios')
+const qs = require('qs')
 
 class LBRY {
   constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, RPCUser, RPCPass) {
@@ -14,6 +15,7 @@ class LBRY {
         password: RPCPass
       }
     })
+    this.chainquery_api = 'https://chainquery.lbry.com/api/sql'
   }
 
   /**
@@ -52,7 +54,6 @@ class LBRY {
 
   /**
    * Get blockchain info
-   *   curl --user lbry --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method": "getblockchaininfo", "params": [] }' -H 'content-type: text/plain;' http://127.0.0.1:9245/
    * @return {Promise} Axios promise
    */
   getBlockChainInfo () {
@@ -100,7 +101,7 @@ class LBRY {
         return Promise.resolve(response.data.result)
       })
   }
-
+  
   /**
    * Get exchange info from Whattomine.com
    * 
@@ -110,6 +111,46 @@ class LBRY {
     return axios.get('https://whattomine.com/coins/164.json')
       .then(response => {
         return Promise.resolve(response.data)
+      })
+  }
+
+  /*
+   * Get address info
+   * @return {Promise} Axios promise (id & balance)
+   */
+  getAddressInfo (address) {
+    const query = 'SELECT id, balance, created_at, modified_at FROM address WHERE address= "' + address + '" LIMIT 1'
+    return axios.get(this.chainquery_api, {
+        params: {
+          'query': query
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params) // { encode: false }
+        }
+      })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /*
+   * Get transactions from address (limit by last 15 transactions)
+   * @return {Promise} Axios promise (credit_amount, debit_amount, hash, created_time)
+   */
+  getTransactions (address) {
+    const query = 'SELECT credit_amount, debit_amount, hash, created_time FROM transaction_address ' +
+    'LEFT JOIN transaction ON transaction_address.transaction_id=transaction.id WHERE ' +
+    'transaction_address.address_id = ' + address + ' ORDER BY transaction_time DESC LIMIT 15'
+    return axios.get(this.chainquery_api, {
+        params: {
+          'query': query
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params) // { encode: false }
+        }
+      })
+      .then(response => {
+        return Promise.resolve(response.data.data)
       })
   }
 }
