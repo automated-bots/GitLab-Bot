@@ -50,7 +50,7 @@ app.listen(port, () => {
 /// / Telegram bot commands ////
 
 // help command - show available commands
-bot.onText(/[\/|!]help/, msg => {
+bot.onText(/[/|!]help/, msg => {
   const chatId = msg.chat.id
   const helpText = `
 /help - Return this help output
@@ -65,7 +65,7 @@ bot.onText(/[\/|!]help/, msg => {
 })
 
 // status command
-bot.onText(/[\/|!]status/, msg => {
+bot.onText(/[/|!]status/, msg => {
   const chatId = msg.chat.id
 
   lbry.getLbryNetStatus()
@@ -84,23 +84,23 @@ Connection: ${result.connection_status.code}`
     })
 })
 
-bot.onText(/^[\/|!]file\S*$/, msg => {
+bot.onText(/^[/|!]file\S*$/, msg => {
   const chatId = msg.chat.id
   bot.sendMessage(chatId, 'Error: Provide atleast the URI as argument: /fileinfo <uri>')
 })
 
 // fileinfo command (/file <uri>)
-bot.onText(/[\/|!]file@?\S* (.+)/, (msg, match) => {
+bot.onText(/[/|!]file@?\S* (.+)/, (msg, match) => {
   const uri = match[1].trim()
   lbry.getMetaFileData(uri)
     .then(result => {
       const chatId = msg.chat.id
       const title = result.metadata.title
       let duration = 'N/A'
-      if(result.metadata.video.duration) {
-        const duration_mins = Math.floor(parseFloat(result.metadata.video.duration)/60)
-        const duration_secs = (((parseFloat(result.metadata.video.duration)/60) % 2) * 60).toFixed(0)
-        duration = `${duration_mins}m ${duration_secs}s`
+      if (result.metadata.video.duration) {
+        const durationMin = Math.floor(parseFloat(result.metadata.video.duration) / 60)
+        const durationSec = (((parseFloat(result.metadata.video.duration) / 60) % 2) * 60).toFixed(0)
+        duration = `${durationMin}m ${durationSec}s`
       }
       const thumbnail = result.metadata.thumbnail.url
       const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
@@ -121,7 +121,7 @@ Watch Online: ${publicURL}`
     })
 })
 
-bot.onText(/[\/|!]networkinfo/, msg => {
+bot.onText(/[/|!]networkinfo/, msg => {
   lbry.getNetworkInfo()
     .then(result => {
       const chatId = msg.chat.id
@@ -148,43 +148,43 @@ Networks:`
     })
 })
 
-bot.onText(/[\/|!]stats/, msg => {
+bot.onText(/[/|!]stats/, msg => {
   const chatId = msg.chat.id
   lbry.getBlockChainInfo()
     .then(result => {
       lbry.getMiningInfo()
-      .then(mining_result => {
-        const hashrateth = (parseFloat(mining_result.networkhashps)/1000.0/1000.0/1000.0/1000.0).toFixed(2)
-        lbry.getExchangeInfo()
-        .then(exchange_result => {
-          const block_time_mins = Math.floor(parseFloat(exchange_result.block_time)/60)
-          const block_time_secs = (((parseFloat(exchange_result.block_time)/60) % 2) * 60).toFixed(0)
-          const exchange_rate24 = parseFloat(exchange_result.exchange_rate24).toFixed(10)
-          const text = `
+        .then(miningResult => {
+          const hashrateth = (parseFloat(miningResult.networkhashps) / 1000.0 / 1000.0 / 1000.0 / 1000.0).toFixed(2)
+          lbry.getExchangeInfo()
+            .then(exchangeResult => {
+              const blockTimeMin = Math.floor(parseFloat(exchangeResult.block_time) / 60)
+              const blockTimeSec = (((parseFloat(exchangeResult.block_time) / 60) % 2) * 60).toFixed(0)
+              const exchangeRate24 = parseFloat(exchangeResult.exchange_rate24).toFixed(10)
+              const text = `
 Last block: ${result.blocks}
 Median time current best block: ${result.mediantime}
 Hash best block: ${result.bestblockhash}
 Hashrate: ${hashrateth} Thash/s
-Mempool size: ${mining_result.pooledtx}
+Mempool size: ${miningResult.pooledtx}
 Difficulty: ${result.difficulty}
-Difficulty 24 hours avg: ${exchange_result.difficulty24}
+Difficulty 24 hours avg: ${exchangeResult.difficulty24}
 --------------------------------------------------------------------
-Block time: ${block_time_mins}m ${block_time_secs}s
-Block reward: ${exchange_result.block_reward} LBC
-Block reward 24 hours avg: ${exchange_result.block_reward24} LBC
-Exchange rate: ${exchange_result.exchange_rate} BTC-LTC
-Exchange rate 24 hours avg: ${exchange_rate24} BTC-LTC
-Market cap: ${exchange_result.market_cap}
+Block time: ${blockTimeMin}m ${blockTimeSec}s
+Block reward: ${exchangeResult.block_reward} LBC
+Block reward 24 hours avg: ${exchangeResult.block_reward24} LBC
+Exchange rate: ${exchangeResult.exchange_rate} BTC-LTC
+Exchange rate 24 hours avg: ${exchangeRate24} BTC-LTC
+Market cap: ${exchangeResult.market_cap}
           `
-          bot.sendMessage(chatId, text)
+              bot.sendMessage(chatId, text)
+            })
+            .catch(error => {
+              console.error(error)
+            })
         })
         .catch(error => {
           console.error(error)
-        })  
-      })
-      .catch(error => {
-        console.error(error)
-      })      
+        })
     })
     .catch(error => {
       console.error(error)
@@ -192,7 +192,7 @@ Market cap: ${exchange_result.market_cap}
 })
 
 // address command (/address <address>)
-bot.onText(/[\/|!]address@?\S* (.+)/, (msg, match) => {
+bot.onText(/[/|!]address@?\S* (.+)/, (msg, match) => {
   const address = match[1].trim()
   lbry.getAddressInfo(address)
     .then(result => {
@@ -202,11 +202,10 @@ bot.onText(/[\/|!]address@?\S* (.+)/, (msg, match) => {
         const text = `
 Created at: ${result[0].created_at}
 Modified at: ${result[0].modified_at}
-Balance: ${balance} LBC`
+Balance: ${balance} LBC
+Link: https://explorer.lbry.com/address/${address}`
         bot.sendMessage(chatId, text)
-      }
-      else
-      {
+      } else {
         bot.sendMessage(chatId, 'Address is not (yet) used.')
       }
     })
@@ -216,15 +215,14 @@ Balance: ${balance} LBC`
 })
 
 // transactions command (/transactions <address>)
-bot.onText(/[\/|!]transactions@?\S* (.+)/, (msg, match) => {
+bot.onText(/[/|!]transactions@?\S* (.+)/, (msg, match) => {
   const address = match[1].trim()
+  const chatId = msg.chat.id
   lbry.getAddressInfo(address)
     .then(result => {
-      if(result.length > 0)
-      {
+      if (result.length > 0) {
         lbry.getTransactions(result[0].id)
           .then(list => {
-            const chatId = msg.chat.id
             let text = 'Last 15 transactions:\n'
             if (list.length > 0) {
               for (let i = 0; i < list.length; i++) {
@@ -249,9 +247,7 @@ bot.onText(/[\/|!]transactions@?\S* (.+)/, (msg, match) => {
           .catch(error => {
             console.error(error)
           })
-      }
-      else
-      {
+      } else {
         bot.sendMessage(chatId, 'Address not found')
       }
     })
@@ -266,11 +262,9 @@ bot.on('message', msg => {
     const name = msg.from.first_name
     if (msg.text.toString() === '!' || msg.text.toString() === '/') {
       bot.sendMessage(msg.chat.id, 'Please use /help or !help to get more info.')
-    }
-    else if (msg.text.toString().toLowerCase().includes('hello')) {
+    } else if (msg.text.toString().toLowerCase().includes('hello')) {
       bot.sendMessage(msg.chat.id, 'Welcome ' + name + '!')
-    }
-    else if (msg.text.toString().toLowerCase().includes('bye')) {
+    } else if (msg.text.toString().toLowerCase().includes('bye')) {
       bot.sendMessage(msg.chat.id, 'Hope to see you around again, <b>Bye ' + name + '</b>!', { parse_mode: 'HTML' })
     }
   }
