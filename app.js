@@ -178,9 +178,7 @@ bot.onText(/\/transactions@?\S* (.+)/, (msg, match) => {
       lbry.getTransactions(result.id)
         .then(list => {
           const chatId = msg.chat.id
-          let text = `
-        Last 15 transactions:
-        `
+          let text = 'Last 15 transactions:\n'
           if (list.length > 0) {
             for (let i = 0; i < list.length; i++) {
               let amount = ''
