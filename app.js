@@ -116,7 +116,7 @@ bot.onText(/\/networkinfo/, msg => {
   lbry.getNetworkInfo()
     .then(result => {
       const chatId = msg.chat.id
-      var text = `
+      let text = `
 Protocol version: ${result.protocolversion}
 Connections: ${result.connections}
 P2P active: ${result.networkactive}
@@ -124,8 +124,7 @@ Minimum relay fee:  ${result.relayfee} LBC/kB
 Minimum incremental fee: ${result.incrementalfee} LBC/kB
 Networks:`
       const networks = result.networks
-      var i
-      for (i = 0; i < networks.length; i++) {
+      for (let i = 0; i < networks.length; i++) {
         text += `
     Name: ${networks[i].name}
     Only net: ${networks[i].limited}
@@ -160,9 +159,59 @@ bot.onText(/\/balance@?\S* (.+)/, (msg, match) => {
   lbry.getAddressInfo(address)
     .then(result => {
       const chatId = msg.chat.id
-      const text = `
-Balance: ${result.balance}}`
-      bot.sendMessage(chatId, text)
+      if(result.length > 0)
+      {
+        const text = `
+  Balance: ${result[0].balance}}`
+        bot.sendMessage(chatId, text)
+      }
+    })
+    .catch(error => {
+      console.error(error)
+    })
+})
+
+// transactions command (/transactions <address>)
+bot.onText(/\/transactions@?\S* (.+)/, (msg, match) => {
+  const address = match[1]
+  lbry.getAddressInfo(address)
+    .then(result => {
+      const address_id = result.id
+      lbry.getTransactions(address_id)
+      .then(list => {
+        const chatId = msg.chat.id
+        let text = `
+        Last 15 transactions:
+        `
+        if(list.length > 0)
+        {
+          for(let i = 0; i < list.length; i++)
+          {
+            let amount = ''
+            if(list[i].credit_amount != '0.00000000')
+            {
+              amount = list[i].credit_amount
+            } else {
+
+              amount = '-' + list[i].debit_amount
+            }
+            text += `
+  Hash: ${list[i].hash}
+  Amount: ${list[i].amount} LBC
+  Timestamp: ${list[i].created_time}
+  Transaction link: https://explorer.lbry.com/tx/${list[i].hash}?address=${address}#${address}
+  ----------------------`
+          }
+          bot.sendMessage(chatId, text)
+        }
+        else
+        {
+          bot.sendMessage(chatId, "No transactions found!")
+        }
+      })
+      .catch(error => {
+        console.error(error)
+      })
     })
     .catch(error => {
       console.error(error)

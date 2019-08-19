@@ -98,5 +98,19 @@ class LBRY {
         return Promise.resolve(response.data.data)
       })
   }
+
+  /**
+   * Get transactions from address (limit by last 15 transactions)
+   * @return {Promise} Axios promise (credit_amount, debit_amount, hash, created_time)
+   */
+  getTransactions (address) {
+    const query = 'SELECT credit_amount, debit_amount, hash, created_time FROM transaction_address ' +
+    'LEFT JOIN transaction ON transaction_address.transaction_id=transaction.id WHERE ' +
+    'transaction_address.address_id = ' + address + ' ORDER BY transaction_time DESC LIMIT 15'
+    return this.chainquery.get(qs.stringify({ 'query': query }))
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
 }
 module.exports = LBRY
