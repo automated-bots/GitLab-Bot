@@ -50,20 +50,20 @@ app.listen(port, () => {
 /// / Telegram bot commands ////
 
 // help command - show available commands
-bot.onText(/\/help/, msg => {
+bot.onText(/[\/|!]help/, msg => {
   const chatId = msg.chat.id
   const helpText = `
 /help - Return this help output
 /status - Retrieve Lbrynet status
 /fileinfo <uri> - Get meta file content
 /networkinfo - Get LBRY Network info
-/blockchaininfo - Get LBRY Blockchain info
+/stats - Get blockchain, mining and exchange stats
 `
   bot.sendMessage(chatId, helpText)
 })
 
 // status command
-bot.onText(/\/status/, msg => {
+bot.onText(/[\/|!]status/, msg => {
   const chatId = msg.chat.id
 
   lbry.getLbryNetStatus()
@@ -82,13 +82,13 @@ Connection: ${result.connection_status.code}`
     })
 })
 
-bot.onText(/^\/fileinfo\S*$/, msg => {
+bot.onText(/^[\/|!]file\S*$/, msg => {
   const chatId = msg.chat.id
   bot.sendMessage(chatId, 'Error: Provide atleast the URI as argument: /fileinfo <uri>')
 })
 
-// fileinfo command (/fileinfo <uri>)
-bot.onText(/\/fileinfo@?\S* (.+)/, (msg, match) => {
+// fileinfo command (/file <uri>)
+bot.onText(/[\/|!]file@?\S* (.+)/, (msg, match) => {
   const uri = match[1]
   lbry.getMetaFileData(uri)
     .then(result => {
@@ -112,11 +112,12 @@ Watch Online: ${publicURL}`
     })
 })
 
-bot.onText(/\/networkinfo/, msg => {
+bot.onText(/[\/|!]networkinfo/, msg => {
   lbry.getNetworkInfo()
     .then(result => {
       const chatId = msg.chat.id
       var text = `
+LBRY server version: ${result.version}
 Protocol version: ${result.protocolversion}
 Connections: ${result.connections}
 P2P active: ${result.networkactive}
@@ -139,15 +140,43 @@ Networks:`
     })
 })
 
-bot.onText(/\/blockchaininfo/, msg => {
+bot.onText(/[\/|!]stats/, msg => {
+  const chatId = msg.chat.id
   lbry.getBlockChainInfo()
     .then(result => {
-      const chatId = msg.chat.id
-      const text = `
+      lbry.getMiningInfo()
+      .then(mining_result => {
+        const hashrateth = (parseFloat(mining_result.networkhashps)/1000.0/1000.0/1000.0/1000.0).toFixed(2)
+        lbry.getExchangeInfo()
+        .then(exchange_result => {
+          const block_time_mins = Math.floor(parseFloat(exchange_result.block_time)/60)
+          const block_time_secs = (((parseFloat(exchange_result.block_time)/60) % 2) * 60).toFixed(0)
+          const exchange_rate24 = parseFloat(exchange_result.exchange_rate24).toFixed(10)
+          const text = `
+Last block: ${result.blocks}
+Median time current best block: ${result.mediantime}
+Hash best block: ${result.bestblockhash}
+Hashrate: ${hashrateth} Thash/s
+Mempool size: ${mining_result.pooledtx}
 Difficulty: ${result.difficulty}
-Bestblockhash: ${result.bestblockhash}
-Median time current best block: ${result.mediantime}`
-      bot.sendMessage(chatId, text)
+Difficulty 24 hours avg: ${exchange_result.difficulty24}
+--------------------------------------------------------------------
+Block time: ${block_time_mins}m ${block_time_secs}s
+Block reward: ${exchange_result.block_reward} LBC
+Block reward 24 hours avg: ${exchange_result.block_reward24} LBC
+Exchange rate: ${exchange_result.exchange_rate} BTC-LTC
+Exchange rate 24 hours avg: ${exchange_rate24} BTC-LTC
+Market cap: ${exchange_result.market_cap}
+          `
+          bot.sendMessage(chatId, text)
+        })
+        .catch(error => {
+          console.error(error)
+        })  
+      })
+      .catch(error => {
+        console.error(error)
+      })      
     })
     .catch(error => {
       console.error(error)

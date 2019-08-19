@@ -68,8 +68,9 @@ class LBRY {
   }
 
   /**
-   * Get network info
-   * @return {Promise} Axios promise
+   * Get network info from the core itself
+   * 
+   * @return {Promise} Axios promise (blocks, headers, bestblockhash, difficulty, mediantime, softforks)
    */
   getNetworkInfo () {
     return this.lbrycrd.post('/', {
@@ -80,6 +81,35 @@ class LBRY {
     })
       .then(response => {
         return Promise.resolve(response.data.result)
+      })
+  }
+
+  /**
+   * Get mining info from the core itself
+   * 
+   * @return {Promise} Axios promise (blocks, difficulty, networkhashps)
+   */
+  getMiningInfo() {
+    return this.lbrycrd.post('/', {
+      jsonrpc: '1.0',
+      id: 'LBRY Bot',
+      method: 'getmininginfo',
+      params: {}
+    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
+  }
+
+  /**
+   * Get exchange info from Whattomine.com
+   * 
+   * @return {Promise} Axios promise (block_time, block_reward, difficulty24, exchange_rate, exchange_rate24, market_cap)
+   */
+  getExchangeInfo() {
+    return axios.get('https://whattomine.com/coins/164.json')
+      .then(response => {
+        return Promise.resolve(response.data)
       })
   }
 }
