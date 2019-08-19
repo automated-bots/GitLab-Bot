@@ -93,7 +93,7 @@ class LBRY {
    */
   getAddressInfo (address) {
     const query = 'SELECT id, balance FROM address WHERE address= "' + address + '" LIMIT 1'
-    return this.chainquery.get(qs.stringify({ 'query': query }))
+    return this.chainquery.get(qs.stringify({ query: query }))
       .then(response => {
         return Promise.resolve(response.data.data)
       })
@@ -107,7 +107,7 @@ class LBRY {
     const query = 'SELECT credit_amount, debit_amount, hash, created_time FROM transaction_address ' +
     'LEFT JOIN transaction ON transaction_address.transaction_id=transaction.id WHERE ' +
     'transaction_address.address_id = ' + address + ' ORDER BY transaction_time DESC LIMIT 15'
-    return this.chainquery.get(qs.stringify({ 'query': query }))
+    return this.chainquery.get(qs.stringify({ query: query }))
       .then(response => {
         return Promise.resolve(response.data.data)
       })

@@ -159,8 +159,7 @@ bot.onText(/\/balance@?\S* (.+)/, (msg, match) => {
   lbry.getAddressInfo(address)
     .then(result => {
       const chatId = msg.chat.id
-      if(result.length > 0)
-      {
+      if (result.length > 0) {
         const text = `
   Balance: ${result[0].balance}}`
         bot.sendMessage(chatId, text)
@@ -176,42 +175,35 @@ bot.onText(/\/transactions@?\S* (.+)/, (msg, match) => {
   const address = match[1]
   lbry.getAddressInfo(address)
     .then(result => {
-      const address_id = result.id
-      lbry.getTransactions(address_id)
-      .then(list => {
-        const chatId = msg.chat.id
-        let text = `
+      lbry.getTransactions(result.id)
+        .then(list => {
+          const chatId = msg.chat.id
+          let text = `
         Last 15 transactions:
         `
-        if(list.length > 0)
-        {
-          for(let i = 0; i < list.length; i++)
-          {
-            let amount = ''
-            if(list[i].credit_amount != '0.00000000')
-            {
-              amount = list[i].credit_amount
-            } else {
-
-              amount = '-' + list[i].debit_amount
-            }
-            text += `
+          if (list.length > 0) {
+            for (let i = 0; i < list.length; i++) {
+              let amount = ''
+              if (list[i].credit_amount !== '0.00000000') {
+                amount = list[i].credit_amount
+              } else {
+                amount = '-' + list[i].debit_amount
+              }
+              text += `
   Hash: ${list[i].hash}
-  Amount: ${list[i].amount} LBC
+  Amount: ${amount} LBC
   Timestamp: ${list[i].created_time}
   Transaction link: https://explorer.lbry.com/tx/${list[i].hash}?address=${address}#${address}
   ----------------------`
+            }
+            bot.sendMessage(chatId, text)
+          } else {
+            bot.sendMessage(chatId, 'No transactions found!')
           }
-          bot.sendMessage(chatId, text)
-        }
-        else
-        {
-          bot.sendMessage(chatId, "No transactions found!")
-        }
-      })
-      .catch(error => {
-        console.error(error)
-      })
+        })
+        .catch(error => {
+          console.error(error)
+        })
     })
     .catch(error => {
       console.error(error)
