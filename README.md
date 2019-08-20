@@ -39,7 +39,7 @@ Requirements:
 * [Lbrynet deamon](https://github.com/lbryio/lbry-sdk/releases)
 * [Lbrycrd deamon](https://github.com/lbryio/lbrycrd) with txindex turned on
 
-```
+```sh
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs npm
 ```
