@@ -60,6 +60,7 @@ bot.onText(/[/|!]help/, msg => {
 /file <uri> - Get meta file content
 /networkinfo - Get LBRY Network info
 /stats - Get blockchain, mining and exchange stats
+/price - Get market (price) info
 /address <address> - Get address info
 /transactions <address> - Get transactions from a specific address
 `
@@ -170,7 +171,7 @@ Hashrate: ${hashrateth} Thash/s
 Mempool size: ${miningResult.pooledtx}
 Difficulty: ${result.difficulty}
 Difficulty 24 hours avg: ${exchangeResult.difficulty24}
---------------------------------------------------------------------
+----------------------------------------------
 Block time: ${blockTimeMin}m ${blockTimeSec}s
 Block reward: ${exchangeResult.block_reward} LBC
 Block reward 24 hours avg: ${exchangeResult.block_reward24} LBC
@@ -239,7 +240,7 @@ bot.onText(/[/|!]transactions@?\S* (.+)/, (msg, match) => {
     Amount: ${amount} LBC
     Timestamp: ${list[i].created_time}
     Transaction link: https://explorer.lbry.com/tx/${list[i].hash}?address=${address}#${address}
-    ----------------------`
+    -----------------------------`
               }
               bot.sendMessage(chatId, text)
             } else {
@@ -252,6 +253,42 @@ bot.onText(/[/|!]transactions@?\S* (.+)/, (msg, match) => {
       } else {
         bot.sendMessage(chatId, 'Address not found')
       }
+    })
+    .catch(error => {
+      console.error(error)
+    })
+})
+
+// price command (/price)
+bot.onText(/[/|!]price@?\S*/, msg => {
+  lbry.getLatestPrices()
+    .then(result => {
+      const chatId = msg.chat.id
+      const quote = result.quote.USD
+      const circulating = Math.floor(parseFloat(result.circulating_supply))
+      const price = parseFloat(quote.price).toFixed(6)
+      const volume24h = parseFloat(quote.volume_24h).toFixed(5)
+      const volume7d = parseFloat(quote.volume_7d).toFixed(5)
+      const volume30d = parseFloat(quote.volume_30d).toFixed(5)
+      const marketCap = parseFloat(quote.market_cap).toFixed(2)
+      const text = `
+Rank: #${result.cmc_rank}
+Max. available coins: ${result.max_supply} LBCs
+Current amount coins: ${result.total_supply} LBCs
+Number of coins circulating: ${circulating} LBCs
+----------------------------------
+Price: $${price}/LBC
+Volume 24 hour avg: ${volume24h} LBC
+Volume 7 days avg: ${volume7d} LBC
+Volume 30 days avg: ${volume30d} LBC
+Market cap: $${marketCap}
+----------------------------------
+Change:
+Last hour: ${quote.percent_change_1h}%
+Last 24 hours: ${quote.percent_change_24h}%
+Last 7 days: ${quote.percent_change_7d}%
+`
+      bot.sendMessage(chatId, text)
     })
     .catch(error => {
       console.error(error)
