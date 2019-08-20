@@ -2,6 +2,7 @@ process.env['NTBA_FIX_319'] = 1
 process.env['NTBA_FIX_350'] = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
+const COINMARKETCAP_API_TOKEN = process.env.COINMARKETCAP_API_TOKEN
 const LBRYNET_HOST = 'localhost'
 const LBRYNET_PORT = 5279
 const LBRYCRD_HOST = 'localhost'
@@ -17,7 +18,8 @@ const bodyParser = require('body-parser')
 const LBRY = require('./lbry')
 
 const lbry = new LBRY(LBRYNET_HOST, LBRYNET_PORT,
-  LBRYCRD_HOST, LBRYCRD_PORT, RPC_USER, RPC_PASS)
+  LBRYCRD_HOST, LBRYCRD_PORT, RPC_USER, RPC_PASS,
+  COINMARKETCAP_API_TOKEN)
 
 // No need to pass any parameters as we will handle the updates with Express
 // TODO: Only create a TelegramBot object, when bot server is enabled for serving Telegram requests

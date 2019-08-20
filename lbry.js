@@ -2,11 +2,13 @@ const axios = require('axios')
 const qs = require('qs')
 
 class LBRY {
-  constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, RPCUser, RPCPass) {
+  constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, RPCUser, RPCPass, coinMarketAPI) {
+    // Local Lbrynet (SDK api)
     this.lbrynet = axios.create({
       baseURL: 'http://' + lbrynetHost + ':' + lbrynetPort,
       timeout: 10000
     })
+    // Local lbry core deamon API
     this.lbrycrd = axios.create({
       baseURL: 'http://' + lbrycrdHost + ':' + lbrycrdPort,
       timeout: 10000,
@@ -15,7 +17,27 @@ class LBRY {
         password: RPCPass
       }
     })
+    // Public ChainQuery API
     this.chainquery_api = 'https://chainquery.lbry.com/api/sql'
+    // CoinMarketCap
+    this.coinmarket = axios.create({
+      baseURL: 'https://pro-api.coinmarketcap.com/v1',
+      timeout: 10000,
+      headers: {
+        'X-CMC_PRO_API_KEY': coinMarketAPI
+      }
+    })
+  }
+
+  /**
+   * Test coinmarket getter
+   *
+   * @return {Promise} Axios promise
+   */
+  testQuery () {
+    return this.coinmarket.get('/cryptocurrency/map', {
+      symbol: 'BTC,USDT,BNB'
+    })
   }
 
   /**

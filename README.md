@@ -56,6 +56,7 @@ Create & Fill-in the applicable tokens in `tokens.env` file, by using the templa
 
 ```sh
 TELEGRAM_TOKEN=xyz
+COINMARKETCAP_API_TOKEN=xyz
 ```
 
 Finally, starting the bot server: `npm start` (or `node app.js`)
