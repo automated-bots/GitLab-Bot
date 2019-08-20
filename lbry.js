@@ -31,31 +31,43 @@ class LBRY {
   }
 
   /**
-   * Get lastest prices (quotes) from CoinMarketCap
-   *
-   * @return {Promise} Axios promise
-   */
-  getLatestPrices () {
-    return this.coinmarket.get('/cryptocurrency/quotes/latest', {
-      params: {
-        id: this.coinmarket_id,
-        aux: 'num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,market_cap_by_total_supply,' +
-        'volume_24h_reported,volume_7d,volume_7d_reported,volume_30d,volume_30d_reported'
-      }
-    })
-      .then(response => {
-        return Promise.resolve(response.data.data[this.coinmarket_id])
-      })
-  }
-
-  /**
-   * Retrieve LBRYNET deamon information
+   * Retrieve LBRYnet deamon information
    *
    * @return {Promise} Axios promise
    */
   getLbryNetStatus () {
     return this.lbrynet.post('/', {
       method: 'status',
+      params: {}
+    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
+  }
+
+  /**
+   * Get peer node info from LBRY core
+   *
+   * @return {Promise} Axios promise
+   */
+  getPeerInfo () {
+    return this.lbrycrd.post('/', {
+      method: 'getpeerinfo',
+      params: {}
+    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
+  }
+
+  /**
+   * Get wallet info info from LBRY core
+   *
+   * @return {Promise} Axios promise
+   */
+  getWalletInfo () {
+    return this.lbrycrd.post('/', {
+      method: 'getwalletinfo',
       params: {}
     })
       .then(response => {
@@ -144,6 +156,24 @@ class LBRY {
       })
   }
 
+  /**
+   * Get lastest prices (quotes) from CoinMarketCap
+   *
+   * @return {Promise} Axios promise
+   */
+  getLatestPrices () {
+    return this.coinmarket.get('/cryptocurrency/quotes/latest', {
+      params: {
+        id: this.coinmarket_id,
+        aux: 'num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,market_cap_by_total_supply,' +
+        'volume_24h_reported,volume_7d,volume_7d_reported,volume_30d,volume_30d_reported'
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data[this.coinmarket_id])
+      })
+  }
+
   /*
    * Get address info
    * @return {Promise} Axios promise (id & balance)
@@ -155,7 +185,7 @@ class LBRY {
         query: query
       },
       paramsSerializer: params => {
-        return qs.stringify(params) // { encode: false }
+        return qs.stringify(params)
       }
     })
       .then(response => {
@@ -164,19 +194,19 @@ class LBRY {
   }
 
   /*
-   * Get transactions from address (limit by last 15 transactions)
+   * Get transactions from address (limit by last 10 transactions)
    * @return {Promise} Axios promise (credit_amount, debit_amount, hash, created_time)
    */
   getTransactions (address) {
     const query = 'SELECT credit_amount, debit_amount, hash, created_time FROM transaction_address ' +
     'LEFT JOIN transaction ON transaction_address.transaction_id=transaction.id WHERE ' +
-    'transaction_address.address_id = ' + address + ' ORDER BY transaction_time DESC LIMIT 15'
+    'transaction_address.address_id = ' + address + ' ORDER BY transaction_time DESC LIMIT 10'
     return axios.get(this.chainquery_api, {
       params: {
         query: query
       },
       paramsSerializer: params => {
-        return qs.stringify(params) // { encode: false }
+        return qs.stringify(params)
       }
     })
       .then(response => {
