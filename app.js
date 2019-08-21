@@ -72,7 +72,7 @@ bot.onText(/[/|!]help/, msg => {
 // Give FAQ Link
 bot.onText(/^[/|!]faq\S*$/, msg => {
   const chatId = msg.chat.id
-  bot.sendMessage(chatId, 'Visit: https://lbry.com/faq')
+  bot.sendMessage(chatId, '[Read FAQ](https://lbry.com/faq)', { parse_mode: 'markdown' })
 })
 
 // Why is LBRY created?
@@ -87,10 +87,18 @@ bot.onText(/^[/|!]what\S*$/, msg => {
   bot.sendMessage(chatId, 'TODO!')
 })
 
-// Since when does LBRY exists (age)
-bot.onText(/^[/|!]when\S*$/, msg => {
+// Age, since when does LBRY exists (first block)
+// Source: https://explorer.lbry.com/blocks/1
+bot.onText(/^[/|!]age\S*$/, msg => {
   const chatId = msg.chat.id
-  bot.sendMessage(chatId, 'TODO!')
+  const age = Date.now() - 1466646592000 // timestamp ms since creation
+  const seconds = Math.floor(age / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  const months = Math.floor(days / 30)
+  const years = Math.floor(days / 365)
+  bot.sendMessage(chatId, `LBRY age: ${years} years, ${months} months, ${days} days, ${hours}h ${minutes}m ${seconds}s, since the first block exist.`)
 })
 
 // status command (detailed status report)
