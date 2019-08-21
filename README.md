@@ -80,3 +80,13 @@ txindex=1
 Run lint: `npm run lint`
 
 Fix lint issues: `npm run fix`
+
+## Production
+
+Use script: `start_bot_prod.sh`
+
+For example append to crontab:
+
+```sh                                                                                                                                                                  
+@reboot /path/to/start_bot_prod.sh                                                                                                                                                  
+```
