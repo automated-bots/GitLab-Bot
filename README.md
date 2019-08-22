@@ -81,6 +81,10 @@ Run lint: `npm run lint`
 
 Fix lint issues: `npm run fix`
 
+### Unit Testing
+
+Run test: `npm test`
+
 ## Production
 
 Use script: `start_bot_prod.sh`
