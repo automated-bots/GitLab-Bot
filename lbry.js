@@ -213,5 +213,45 @@ class LBRY {
         return Promise.resolve(response.data.data)
       })
   }
+
+  /*
+   * Get block info
+   * @return {Promise} Axios promise (block_size, height, block_time, difficulty, merkle_root, ...)
+   */
+  getBlockInfo (hash) {
+    const query = 'SELECT bits, block_size, height, version, nonce, block_time, confirmations, difficulty, chainwork, merkle_root ' +
+    'FROM block WHERE hash = "' + hash + '" LIMIT 1'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /*
+   * Get last blocks (max. 10)
+   * @return {Promise} Axios promise (block_time, block_size, height, confirmations, difficulty)
+   */
+  getLastBlocks () {
+    const query = 'SELECT block_time, block_size, height, confirmations, difficulty ' +
+    'FROM block ORDER BY height DESC LIMIT 10'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
 }
 module.exports = LBRY

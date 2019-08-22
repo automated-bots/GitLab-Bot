@@ -65,6 +65,13 @@ bot.onText(/[/|!]help/, msg => {
 /price - Get market (price) info
 /address <address> - Get address info
 /transactions <address> - Get transactions from a specific address
+/block <hash> - Get block info
+/lastblocks - Get the last 10 blocks
+
+/why
+/what
+/age
+/faq
 `
   bot.sendMessage(chatId, helpText)
 })
@@ -91,14 +98,19 @@ bot.onText(/^[/|!]what\S*$/, msg => {
 // Source: https://explorer.lbry.com/blocks/1
 bot.onText(/^[/|!]age\S*$/, msg => {
   const chatId = msg.chat.id
-  const age = Date.now() - 1466646592000 // timestamp ms since creation
-  const seconds = Math.floor(age / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-  const months = Math.floor(days / 30)
-  const years = Math.floor(days / 365)
-  bot.sendMessage(chatId, `LBRY age: ${years} years, ${months} months, ${days} days, ${hours}h ${minutes}m ${seconds}s, since the first block exist.`)
+  const age = Date.now() - 1466646592000 // timestamp ms since creation after genesis block
+  let seconds = Math.floor(age / 1000)
+  let minutes = Math.floor(seconds / 60)
+  seconds = seconds % 60
+  let hours = Math.floor(minutes / 60)
+  minutes = minutes % 60
+  let days = Math.floor(hours / 24)
+  hours = hours % 24
+  let months = Math.floor(days / 30)
+  days = days % 30
+  const years = Math.floor(months / 12)
+  months = months % 12
+  bot.sendMessage(chatId, `LBRY age: ${years} years, ${months} months, ${days} days, ${hours}h ${minutes}m ${seconds}s, since the first mined block exist.`)
 })
 
 // status command (detailed status report)
@@ -249,10 +261,10 @@ bot.onText(/[/|!]stats/, msg => {
             .then(exchangeResult => {
               const medianTime = new Date(result.mediantime * 1000)
               const marketCap = exchangeResult.market_cap.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-              const difficulty = result.difficulty.toLocaleString('en', { maximumFractionDigits: 3 })
-              const difficulty24h = exchangeResult.difficulty24.toLocaleString('en', { maximumFractionDigits: 3 })
-              const difficulty3d = exchangeResult.difficulty3.toLocaleString('en', { maximumFractionDigits: 3 })
-              const difficulty7d = exchangeResult.difficulty7.toLocaleString('en', { maximumFractionDigits: 3 })
+              const difficulty = parseFloat(result.difficulty).toLocaleString('en', { maximumFractionDigits: 3 })
+              const difficulty24h = parseFloat(exchangeResult.difficulty24).toLocaleString('en', { maximumFractionDigits: 3 })
+              const difficulty3d = parseFloat(exchangeResult.difficulty3).toLocaleString('en', { maximumFractionDigits: 3 })
+              const difficulty7d = parseFloat(exchangeResult.difficulty7).toLocaleString('en', { maximumFractionDigits: 3 })
               const blockTimeMin = Math.floor(parseFloat(exchangeResult.block_time) / 60)
               const blockTimeSec = (((parseFloat(exchangeResult.block_time) / 60) % 2) * 60).toFixed(0)
               const exchangeRate = parseFloat(exchangeResult.exchange_rate).toFixed(10)
@@ -293,6 +305,45 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
         .catch(error => {
           console.error(error)
         })
+    })
+    .catch(error => {
+      console.error(error)
+    })
+})
+
+// price command (/price)
+bot.onText(/[/|!]price@?\S*/, msg => {
+  lbry.getLatestPrices()
+    .then(result => {
+      const chatId = msg.chat.id
+      const quote = result.quote.USD
+      const maxSupply = result.max_supply.toLocaleString('en')
+      const totalSupply = result.total_supply.toLocaleString('en')
+      const circulating = result.circulating_supply.toLocaleString('en', { maximumFractionDigits: 0 })
+      const price = quote.price.toLocaleString('en', { maximumFractionDigits: DOLLAR_PRICE_FRACTION_DIGITS })
+      const volume24h = parseFloat(quote.volume_24h).toLocaleString('en', { maximumFractionDigits: 5 })
+      const volume7d = parseFloat(quote.volume_7d).toLocaleString('en', { maximumFractionDigits: 5 })
+      const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { maximumFractionDigits: 5 })
+      const marketCap = parseFloat(quote.market_cap).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      const text = `*General*
+Rank: #${result.cmc_rank}
+Max. available coins: ${maxSupply} LBCs
+Current amount coins: ${totalSupply} LBCs
+Number of coins circulating: ${circulating} LBCs
+
+*Price*
+Price: $${price}/LBC
+Volume 24 hour avg: ${volume24h} LBC
+Volume 7 days avg: ${volume7d} LBC
+Volume 30 days avg: ${volume30d} LBC
+Market capital: $${marketCap}
+
+*% Change*
+Last hour: ${quote.percent_change_1h}%
+Last 24 hours: ${quote.percent_change_24h}%
+Last 7 days: ${quote.percent_change_7d}%
+`
+      bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
     })
     .catch(error => {
       console.error(error)
@@ -364,39 +415,56 @@ bot.onText(/[/|!]transactions@?\S* (.+)/, (msg, match) => {
     })
 })
 
-// price command (/price)
-bot.onText(/[/|!]price@?\S*/, msg => {
-  lbry.getLatestPrices()
+// block command (/block <hash>)
+bot.onText(/[/|!]block@?\S* (.+)/, (msg, match) => {
+  const hash = match[1].trim()
+  const chatId = msg.chat.id
+  lbry.getBlockInfo(hash)
     .then(result => {
-      const chatId = msg.chat.id
-      const quote = result.quote.USD
-      const maxSupply = result.max_supply.toLocaleString('en')
-      const totalSupply = result.total_supply.toLocaleString('en')
-      const circulating = result.circulating_supply.toLocaleString('en', { maximumFractionDigits: 0 })
-      const price = quote.price.toLocaleString('en', { maximumFractionDigits: DOLLAR_PRICE_FRACTION_DIGITS })
-      const volume24h = parseFloat(quote.volume_24h).toLocaleString('en', { maximumFractionDigits: 5 })
-      const volume7d = parseFloat(quote.volume_7d).toLocaleString('en', { maximumFractionDigits: 5 })
-      const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { maximumFractionDigits: 5 })
-      const marketCap = parseFloat(quote.market_cap).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-      const text = `*General*
-Rank: #${result.cmc_rank}
-Max. available coins: ${maxSupply} LBCs
-Current amount coins: ${totalSupply} LBCs
-Number of coins circulating: ${circulating} LBCs
+      if (result.length > 0) {
+        const blockTime = new Date(result[0].block_time * 1000)
+        const difficulty = parseFloat(result[0].difficulty).toLocaleString('en', { maximumFractionDigits: 2 })
+        const textMsg = `
+*Height:* ${result[0].height}
+*Confirmations:* ${result[0].confirmations}
+*Size:* ${result[0].block_size} bytes
+*Bits:* ${result[0].bits}
+*Nonce:* ${result[0].nonce}
+*Block Time:* ${blockTime}
+*Version:* ${result[0].version}
+*Difficulty:* ${difficulty}
+*Chainwork:* ${result[0].chainwork}
+*MerkleRoot:* ${result[0].merkle_root}
+[View Block](https://explorer.lbry.com/blocks/${result[0].height})`
+        bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+      } else {
+        bot.sendMessage(chatId, 'Block not found')
+      }
+    })
+    .catch(error => {
+      console.error(error)
+    })
+})
 
-*Price*
-Price: $${price}/LBC
-Volume 24 hour avg: ${volume24h} LBC
-Volume 7 days avg: ${volume7d} LBC
-Volume 30 days avg: ${volume30d} LBC
-Market capital: $${marketCap}
-
-*% Change*
-Last hour: ${quote.percent_change_1h}%
-Last 24 hours: ${quote.percent_change_24h}%
-Last 7 days: ${quote.percent_change_7d}%
-`
-      bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
+// lastblocks command (/lastblocks)
+bot.onText(/[/|!]lastblocks/, msg => {
+  const chatId = msg.chat.id
+  lbry.getLastBlocks()
+    .then(result => {
+      let textMsg = '*Last 10 blocks*'
+      for (let i = 0; i < result.length; i++) {
+        const blockTime = new Date(result[i].block_time * 1000)
+        const difficulty = parseFloat(result[i].difficulty).toLocaleString('en', { maximumFractionDigits: 3 })
+        textMsg += `
+  *Height:* ${result[i].height}
+  *Time:* ${blockTime}
+  *Size:* ${result[i].block_size} bytes
+  *Confirmations:* ${result[i].confirmations}
+  *Difficulty:* ${difficulty}
+  [View Block](https://explorer.lbry.com/blocks/${result[i].height})
+  ------------------------------------------`
+      }
+      bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
     })
     .catch(error => {
       console.error(error)
