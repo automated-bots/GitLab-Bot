@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const simon = require('sinon')
+// const simon = require('sinon')
 // var app = require('../app')
 
 describe('Color Code Converter', function () {
