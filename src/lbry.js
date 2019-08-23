@@ -2,7 +2,7 @@ const axios = require('axios')
 const qs = require('qs')
 
 class LBRY {
-  constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, RPCUser, RPCPass, coinMarketAPI) {
+  constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, lbrycrdRPCUser, lbrycrdRPCPass, coinMarketAPI) {
     // Local Lbrynet (SDK api)
     this.lbrynet = axios.create({
       baseURL: 'http://' + lbrynetHost + ':' + lbrynetPort,
@@ -13,8 +13,8 @@ class LBRY {
       baseURL: 'http://' + lbrycrdHost + ':' + lbrycrdPort,
       timeout: 10000,
       auth: {
-        username: RPCUser,
-        password: RPCPass
+        username: lbrycrdRPCUser,
+        password: lbrycrdRPCPass
       }
     })
     // Public ChainQuery API
@@ -254,4 +254,5 @@ class LBRY {
       })
   }
 }
+
 module.exports = LBRY

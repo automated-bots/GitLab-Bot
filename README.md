@@ -56,6 +56,7 @@ Create & Fill-in the applicable tokens in `tokens.env` file, by using the templa
 
 ```sh
 TELEGRAM_TOKEN=xyz
+DISCORD_TOKEN=xyz
 COINMARKETCAP_API_TOKEN=xyz
 ```
 
@@ -91,6 +92,6 @@ Use script: `start_bot_prod.sh`
 
 For example append to crontab:
 
-```sh                                                                                                                                                                  
-@reboot /path/to/start_bot_prod.sh                                                                                                                                                  
+```sh
+@reboot /path/to/start_bot_prod.sh
 ```

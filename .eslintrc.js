@@ -9,7 +9,8 @@ module.exports = {
   ],
   globals: {
     Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly'
+    SharedArrayBuffer: 'readonly',
+    TelegramSecretHash: 'writable'
   },
   parserOptions: {
     ecmaVersion: 2018,
