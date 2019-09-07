@@ -26,10 +26,11 @@ class Telegram {
 /block <hash> - Get block info
 /lastblocks - Get the last 10 blocks
 
-/why
-/what
-/age
-/faq`
+/why - Why LBRY?
+/what - What is LBRY?
+/how - How does LBRY work?
+/age - How long does LBRY exists?
+/faq - Frequality Asked Questions`
       this.bot.sendMessage(chatId, helpText)
     })
 
@@ -42,13 +43,37 @@ class Telegram {
     // Why is LBRY created?
     this.bot.onText(/^[/|!]why\S*$/, msg => {
       const chatId = msg.chat.id
-      this.bot.sendMessage(chatId, 'TODO!')
+      this.bot.sendMessage(chatId, `
+LBRY is created to have an open-source and decentralized place to store videos, images, e-books, games or any other content!
+LBRY makes use of the blockchain technology to store the meta data, and use peer-to-peer network to retrieve the actual content.
+
+The content creator can upload the content free to watch or add a certain LBC amount in order to view the content (although most of the content on LBRY is free to watch).
+Alternatively, you can tip the content creator with any LBC amount you like.
+
+Basically LBRY is an alternative for YouTube, Vimeo and others, but free, open-source, decentralized and run by the community.`)
     })
 
     // What is LBRY?
     this.bot.onText(/^[/|!]what\S*$/, msg => {
       const chatId = msg.chat.id
-      this.bot.sendMessage(chatId, 'TODO!')
+      this.bot.sendMessage(chatId, 'LBRY is a decentralized digital content platform, so anyone can share and view the content (for free or for payment). An alternative to YouTube but not limited to videos only, and fully open-source and decentralized!')
+    })
+
+    // How does LBRY work?
+    this.bot.onText(/^[/|!]how\S*$/, msg => {
+      const chatId = msg.chat.id
+      this.bot.sendMessage(chatId, `
+Foundation is the LBRY protocol by using blockchain technology. LBRY extended the Bitcoin proof-of-work concept and added address name that points to the metadata.
+Such an address can be put in a LBRY URL: eg. lbry://mycustomname.
+To make the blockchain more useful extra technolgies like ChainQuery was introduced to search through the blockchain in a much faster and advanced way.
+
+Also there are wallet servers running so the clients can use a so-called SPV wallet client, without the need of downloading the full blockhchain.
+
+When new content is uploaded to LBRY, the data is encryped, hashed and distributed in pieces through the network to other hosts.
+Distributed Hash Table (DHT) is used as an effective way of creating such a distributed network, similar to the BitTorrent protocol.
+
+Last but not least, desktop clients/module apps, websites and more can use the LBRY protocol/SDK in order to actually use LBRY. The main application is the LBRY Desktop app:
+https://github.com/lbryio/lbry-desktop/releases`)
     })
 
     // Age, since when does LBRY exists (first block)
