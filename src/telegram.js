@@ -1,6 +1,12 @@
 const LBC_PRICE_FRACTION_DIGITS = 5
 const DOLLAR_PRICE_FRACTION_DIGITS = 8
 
+const FAQ_URL = 'https://lbry.com/faq'
+const LBRY_TV_URL = 'https://beta.lbry.tv'
+const OPEN_URL = 'https://open.lbry.com'
+const COINMARKET_URL = 'https://coinmarketcap.com/currencies/library-credit'
+const EXPLORER_URL = 'https://explorer.lbry.com'
+
 class Telegram {
   constructor (bot, lbry) {
     this.bot = bot
@@ -25,6 +31,7 @@ class Telegram {
 /transactions <address> - Get transactions from a specific address
 /block <hash> - Get block info
 /lastblocks - Get the last 10 blocks
+/top5 - Get top 5 biggest transactions, get top 10 highest amount channels
 
 /why - Why LBRY?
 /what - What is LBRY?
@@ -37,7 +44,7 @@ class Telegram {
     // Give FAQ Link
     this.bot.onText(/^[/|!]faq\S*$/, msg => {
       const chatId = msg.chat.id
-      this.bot.sendMessage(chatId, '[Read FAQ](https://lbry.com/faq)', { parse_mode: 'markdown' })
+      this.bot.sendMessage(chatId, '[Read FAQ](' + FAQ_URL + ')', { parse_mode: 'markdown' })
     })
 
     // Why is LBRY created?
@@ -190,7 +197,7 @@ Oldest address in keypool: ${oldestKeyTime}
           const thumbnail = result.metadata.thumbnail.url
           const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
           const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
-          const publicURL = 'https://beta.lbry.tv/' + uriWithoutProtocol
+          const publicURL = LBRY_TV_URL + '/' + uriWithoutProtocol
           const textMsg = `
 *Title:* ${title}
 *Channel name:* ${result.channel_name}
@@ -198,7 +205,7 @@ Oldest address in keypool: ${oldestKeyTime}
 *Duration:* ${duration}
 *Size:* ${fileSize} MB
 [Watch Online!](${publicURL})
-[Watch via LBRY App](https://open.lbry.com/${uriWithoutProtocol})`
+[Watch via LBRY App](${OPEN_URL}/${uriWithoutProtocol})`
           this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
           if (thumbnail) { this.bot.sendPhoto(chatId, thumbnail, { caption: 'Thumbnail: ' + title }) }
         })
@@ -311,7 +318,7 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
           const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { maximumFractionDigits: 5 })
           const marketCap = parseFloat(quote.market_cap).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           const text = `*General*
-Rank: #${result.cmc_rank}
+Rank on CoinMarketCap: [#${result.cmc_rank}](${COINMARKET_URL})
 Max. available coins: ${maxSupply} LBCs
 Current amount coins: ${totalSupply} LBCs
 Number of coins circulating: ${circulating} LBCs
@@ -346,7 +353,7 @@ Last 7 days: ${quote.percent_change_7d}%`
 *Created at:* ${result[0].created_at}
 *Modified at:* ${result[0].modified_at}
 *Balance:* ${balance} LBC
-[View online](https://explorer.lbry.com/address/${address})`
+[View online](${EXPLORER_URL}/explorer/${address})`
             this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
           } else {
             this.bot.sendMessage(chatId, 'Address is not (yet) used.')
@@ -379,7 +386,7 @@ Last 7 days: ${quote.percent_change_7d}%`
     Hash: ${list[i].hash}
     Amount: ${amount} LBC
     Timestamp: ${list[i].created_time}
-    [View transaction](https://explorer.lbry.com/tx/${list[i].hash}?address=${address}#${address})
+    [View transaction](${EXPLORER_URL}/tx/${list[i].hash}?address=${address}#${address})
     -----------------------------`
                   }
                   this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
@@ -419,7 +426,7 @@ Last 7 days: ${quote.percent_change_7d}%`
 *Difficulty:* ${difficulty}
 *Chainwork:* ${result[0].chainwork}
 *MerkleRoot:* ${result[0].merkle_root}
-[View Block](https://explorer.lbry.com/blocks/${result[0].height})`
+[View Block](${EXPLORER_URL}/blocks/${result[0].height})`
             this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
           } else {
             this.bot.sendMessage(chatId, 'Block not found')
@@ -445,7 +452,31 @@ Last 7 days: ${quote.percent_change_7d}%`
     *Size:* ${result[i].block_size} bytes
     *Confirmations:* ${result[i].confirmations}
     *Difficulty:* ${difficulty}
-    [View Block](https://explorer.lbry.com/blocks/${result[i].height})
+    [View Block](${EXPLORER_URL}/blocks/${result[i].height})
+    ------------------------------------------`
+          }
+          this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    })
+
+    // top5 command (/top5)
+    this.bot.onText(/[/|!]top5/, msg => {
+      const chatId = msg.chat.id
+      this.lbry.getBiggestTransactions()
+        .then(result => {
+          let textMsg = '*Biggest 4 transactions of this year*'
+          for (let i = 0; i < result.length; i++) {
+            const amount = parseFloat(result[i].value).toLocaleString('en', { maximumFractionDigits: LBC_PRICE_FRACTION_DIGITS })            
+            textMsg += `
+    *Value:* ${amount} LBC
+    *Input count:* ${result[i].output_count}
+    *Output count:* ${result[i].output_count}
+    *Created at:* ${result[i].created_time}
+    *Height:* ${result[i].height}
+    [View Transaction](${EXPLORER_URL}/tx/${result[i].hash})
     ------------------------------------------`
           }
           this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })

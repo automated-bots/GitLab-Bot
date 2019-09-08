@@ -253,6 +253,25 @@ class LBRY {
         return Promise.resolve(response.data.data)
       })
   }
+
+  /**
+   * Get the top 5 biggest transactions of this year (value in LBC)
+   * @return {Promise} Axios promise (hash, created_time, input_count, output_count, value, height)
+   */
+  getBiggestTransactions () {
+    const query = 'SELECT transaction.hash, value, created_time, input_count, output_count, height from transaction LEFT JOIN block ON block.hash = transaction.block_hash_id WHERE year(created_time) = YEAR(CURDATE()) ORDER BY value DESC LIMIT 5'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
 }
 
 module.exports = LBRY

@@ -95,3 +95,9 @@ For example append to crontab:
 ```sh
 @reboot /path/to/start_bot_prod.sh
 ```
+
+## Handy links
+
+* [LBRY nomics from Brendon](https://github.com/eggplantbren/LBRYnomics)
+* [Brendon API](https://www.brendonbrewer.com/lbrynomics/)
+
