@@ -23,15 +23,20 @@ class Telegram {
       const helpText = `
 /help - Return this help output
 /status - Retrieve Lbrynet, Lbrycrd, Chainquery status
-/file <uri> - Get meta file content
 /networkinfo - Get LBRY Network info
 /stats - Get blockchain, mining and exchange stats
 /price - Get market (price) info
-/address <address> - Get address info
-/transactions <address> - Get transactions from a specific address
-/block <hash> - Get block info
+
+/lastcontent - Get the last uploaded content
+/lastchannels - Get the last created channels
 /lastblocks - Get the last 10 blocks
 /top10 - Top 10 biggest transactions & top 10 most subscribed channels
+
+/file <uri> - Get meta file content
+/transaction <transaction> - Get transaction info
+/address <address> - Get address info
+/transactions <address> - Get last 10 transactions from an address
+/block <hash or block height> - Get block info
 
 /why - Why LBRY?
 /what - What is LBRY?
@@ -110,7 +115,7 @@ https://github.com/lbryio/lbry-desktop/releases`)
       let text = ''
       lbry.getLbryNetStatus()
         .then(result => {
-          text += `*General* 🖧
+          text += `*General* 🖥
 Lbrynet daemon running: ${result.is_running}
 Lbrynet connection: ${result.connection_status.code}`
         })
@@ -186,31 +191,39 @@ Oldest address in keypool: ${oldestKeyTime}
       const uri = match[1].trim()
       this.lbry.getMetaFileData(uri)
         .then(result => {
-          const chatId = msg.chat.id
-          const title = result.metadata.title
-          let duration = 'N/A'
-          if (result.metadata.video.duration) {
-            const durationMin = Math.floor(parseFloat(result.metadata.video.duration) / 60)
-            const durationSec = (((parseFloat(result.metadata.video.duration) / 60) % 2) * 60).toFixed(0)
-            duration = `${durationMin}m ${durationSec}s`
-          }
-          const thumbnail = result.metadata.thumbnail.url
-          const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
-          const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
-          const publicURL = LBRY_TV_URL + '/' + uriWithoutProtocol
-          const textMsg = `
+          // Retrieve the channel name as well
+          this.lbry.getChannelNameString(result.channel_claim_id)
+            .then(channelResult => {
+              const chatId = msg.chat.id
+              const title = result.metadata.title
+              const channelName = channelResult[0].name
+              let duration = 'N/A'
+              if (result.metadata.video.duration) {
+                const durationMin = Math.floor(parseFloat(result.metadata.video.duration) / 60)
+                const durationSec = (((parseFloat(result.metadata.video.duration) / 60) % 2) * 60).toFixed(0)
+                duration = `${durationMin}m ${durationSec}s`
+              }
+              const thumbnail = result.metadata.thumbnail.url
+              const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
+              const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
+              const publicURL = LBRY_TV_URL + '/' + uriWithoutProtocol
+              const textMsg = `
 *Title:* ${title}
-*Channel name:* ${result.channel_name}
+*Channel name:* [${channelName}](${OPEN_URL}/${channelName})
 *Media Type:* ${result.metadata.source.media_type}
 *Duration:* ${duration}
 *Size:* ${fileSize} MB
 [Watch Online!](${publicURL})
 [Watch via LBRY App](${OPEN_URL}/${uriWithoutProtocol})`
-          this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
-          if (thumbnail) { this.bot.sendPhoto(chatId, thumbnail, { caption: 'Thumbnail: ' + title }) }
-        })
-        .catch(error => {
-          console.error(error)
+              this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+              if (thumbnail) { this.bot.sendPhoto(chatId, thumbnail, { caption: 'Thumbnail: ' + title }) }
+            })
+            .catch(error => {
+              console.error(error)
+            })
+            .catch(error => {
+              console.error(error)
+            })
         })
     })
 
@@ -264,7 +277,7 @@ Networks:`
                   const exchangeRate24h = parseFloat(exchangeResult.exchange_rate24).toFixed(10)
                   const exchangeRate3d = parseFloat(exchangeResult.exchange_rate3).toFixed(10)
                   const exchangeRate7d = parseFloat(exchangeResult.exchange_rate7).toFixed(10)
-                  const text = `*General* 🖥️
+                  const text = `*General* 🖥
 Last block: ${medianTime}
 Median time current best block: ${result.mediantime}
 Hash best block: ${result.bestblockhash}
@@ -352,16 +365,43 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
         .then(result => {
           const chatId = msg.chat.id
           if (result.length > 0) {
-            const balance = parseFloat(result[0].balance).toLocaleString('en', { maximumFractionDigits: LBC_PRICE_FRACTION_DIGITS })
+            const currentAddress = result[0]
+            const balance = parseFloat(currentAddress.balance).toLocaleString('en', { maximumFractionDigits: LBC_PRICE_FRACTION_DIGITS })
             const text = `
-*Created at:* ${result[0].created_at}
-*Modified at:* ${result[0].modified_at}
+*Created at:* ${currentAddress.created_at}
+*Modified at:* ${currentAddress.modified_at}
 *Balance:* ${balance} LBC
-[View online](${EXPLORER_URL}/explorer/${address})`
+[View online](${EXPLORER_URL}/address/${address})`
             this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
           } else {
             this.bot.sendMessage(chatId, 'Address is not (yet) used.')
           }
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    })
+
+    this.bot.onText(/[/|!]transaction@?\S* (.+)/, (msg, match) => {
+      const hash = match[1].trim()
+      const chatId = msg.chat.id
+      this.lbry.getTransaction(hash)
+        .then(result => {
+          const currentTransaction = result[0]
+          let text = `
+*Amount:* ${currentTransaction.value} LBC (input count: ${currentTransaction.input_count}, output count:${currentTransaction.output_count})
+*🧱 Height:* ${currentTransaction.height}
+*Created at:* ${currentTransaction.created_at}
+*Size:* ${currentTransaction.transaction_size} bytes
+[View transaction online](${EXPLORER_URL}/tx/${hash})`
+          if (currentTransaction.title) {
+            text += `\n
+*Claim Title:* ${currentTransaction.title}
+[View connected claim](${OPEN_URL}/${currentTransaction.name})`
+          }
+          this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
+          // Why not, just send the thumbnail as well!
+          if (currentTransaction.thumbnail_url) { this.bot.sendPhoto(chatId, currentTransaction.thumbnail_url, { caption: 'Thumbnail: ' + currentTransaction.title }) }
         })
         .catch(error => {
           console.error(error)
@@ -410,31 +450,85 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
         })
     })
 
-    // block command (/block <hash>)
+    // block command (/block <hash or block height>)
     this.bot.onText(/[/|!]block@?\S* (.+)/, (msg, match) => {
-      const hash = match[1].trim()
-      const chatId = msg.chat.id
-      this.lbry.getBlockInfo(hash)
-        .then(result => {
-          if (result.length > 0) {
-            const blockTime = new Date(result[0].block_time * 1000)
-            const difficulty = parseFloat(result[0].difficulty).toLocaleString('en', { maximumFractionDigits: 2 })
-            const textMsg = `
-*Height:* ${result[0].height}
-*Confirmations:* ${result[0].confirmations}
-*Size:* ${result[0].block_size} bytes
-*Bits:* ${result[0].bits}
-*Nonce:* ${result[0].nonce}
+      function printBlockInfo (block) {
+        const blockTime = new Date(block.block_time * 1000)
+        const difficulty = parseFloat(block.difficulty).toLocaleString('en', { maximumFractionDigits: 2 })
+        const textMsg = `
+*🧱 Height:* ${block.height}
+*Hash:* ${block.hash}
+*Confirmations:* ${block.confirmations}
+*Size:* ${block.block_size} bytes
+*Bits:* ${block.bits}
+*Nonce:* ${block.nonce}
 *Block Time:* ${blockTime}
-*Version:* ${result[0].version}
+*Version:* ${block.version}
 *Difficulty:* ${difficulty}
-*Chainwork:* ${result[0].chainwork}
-*MerkleRoot:* ${result[0].merkle_root}
-[View Block](${EXPLORER_URL}/blocks/${result[0].height})`
-            this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
-          } else {
-            this.bot.sendMessage(chatId, 'Block not found')
+*Chainwork:* ${block.chainwork}
+*MerkleRoot:* ${block.merkle_root}
+[View Block](${EXPLORER_URL}/blocks/${block.height})`
+        return textMsg
+      }
+
+      const hashOrHeight = match[1].trim()
+      const chatId = msg.chat.id
+      var isHash = (hashOrHeight.match(/^([a-f0-9]{64})$/) != null)
+      if (isHash) {
+        // Retrieve block by hash
+        this.lbry.getBlockInfo(hashOrHeight)
+          .then(result => {
+            if (result.length > 0) {
+              this.bot.sendMessage(chatId, printBlockInfo(result[0]), { parse_mode: 'markdown' })
+            } else {
+              this.bot.sendMessage(chatId, 'Block not found')
+            }
+          })
+          .catch(error => {
+            console.error(error)
+          })
+      } else {
+        // Retrieve block by block height
+        this.lbry.getBlockHeightInfo(hashOrHeight)
+          .then(result => {
+            if (result.length > 0) {
+              this.bot.sendMessage(chatId, printBlockInfo(result[0]), { parse_mode: 'markdown' })
+            } else {
+              this.bot.sendMessage(chatId, 'Block not found')
+            }
+          })
+      }
+    })
+
+    // lastcontent command
+    this.bot.onText(/[/|!]lastcontent/, msg => {
+      const chatId = msg.chat.id
+      this.lbry.getLastContentClaims()
+        .then(result => {
+          let textMsg = '*Last 10 uploaded content*\n'
+          for (let i = 0; i < result.length; i++) {
+            const content = result[i]
+            const type = content.content_type.split('/')[0]
+            textMsg += `${content.created_at} - [${content.title}](${OPEN_URL}/${content.name}) (${type})\n`
           }
+          this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    })
+
+    // lastchannels command
+    this.bot.onText(/[/|!]lastchannels/, msg => {
+      const chatId = msg.chat.id
+      this.lbry.getLastChannelsClaims()
+        .then(result => {
+          let textMsg = '*Last 10 new channels*\n'
+          for (let i = 0; i < result.length; i++) {
+            const channel = result[i]
+            textMsg += `${channel.created_at} - [${channel.name}](${OPEN_URL}/${channel.name})\n`
+          }
+          this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
         })
         .catch(error => {
           console.error(error)
@@ -446,17 +540,17 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
       const chatId = msg.chat.id
       this.lbry.getLastBlocks()
         .then(result => {
-          let textMsg = '*Last 10 blocks*'
+          let textMsg = '*Last 10 blocks* 🧱'
           for (let i = 0; i < result.length; i++) {
-            const blockTime = new Date(result[i].block_time * 1000)
-            const difficulty = parseFloat(result[i].difficulty).toLocaleString('en', { maximumFractionDigits: 3 })
+            const block = result[i]
+            const blockTime = new Date(block.block_time * 1000)
+            const difficulty = parseFloat(block.difficulty).toLocaleString('en', { maximumFractionDigits: 3 })
             textMsg += `
-    *Height:* ${result[i].height}
-    *Time:* ${blockTime}
-    *Size:* ${result[i].block_size} bytes
-    *Confirmations:* ${result[i].confirmations}
+    *Height:* ${block.height}
+    *Time:* ${blockTime.toLocaleDateString('en-US') + ' ' + blockTime.toLocaleTimeString('en-US')}
+    *Size:* ${block.block_size} bytes
     *Difficulty:* ${difficulty}
-    [View Block](${EXPLORER_URL}/blocks/${result[i].height})
+    [View Block](${EXPLORER_URL}/blocks/${block.height})
     ------------------------------------------`
           }
           this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })

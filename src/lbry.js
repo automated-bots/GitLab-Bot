@@ -2,6 +2,16 @@ const axios = require('axios')
 const qs = require('qs')
 
 class LBRY {
+  /**
+   * Constructor
+   * @param {string} lbrynetHost
+   * @param {integer} lbrynetPort
+   * @param {string} lbrycrdHost
+   * @param {integer} lbrycrdPort
+   * @param {string} lbrycrdRPCUser
+   * @param {string} lbrycrdRPCPass
+   * @param {string} coinMarketAPI
+   */
   constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, lbrycrdRPCUser, lbrycrdRPCPass, coinMarketAPI) {
     // Local Lbrynet (SDK api)
     this.lbrynet = axios.create({
@@ -34,6 +44,10 @@ class LBRY {
       }
     })
   }
+
+  /***********************************************
+  * Promise Getters                              *
+  ***********************************************/
 
   /**
    * Retrieve LBRYnet deamon information
@@ -199,6 +213,27 @@ class LBRY {
   }
 
   /*
+   * Get transaction info from hash
+   * @return {Promise} Axios promise (input_count, output_count, hash, created_at, value, fee, height, transaction_size)
+   */
+  getTransaction (hash) {
+    const query = 'SELECT input_count, output_count, transaction.hash, transaction.created_at, value, block.height, transaction_size, claim.name, claim.title, claim.thumbnail_url ' +
+    'FROM transaction LEFT JOIN block ON transaction.block_hash_id = block.hash LEFT JOIN claim ON claim.transaction_hash_id = transaction.hash ' +
+    'WHERE transaction.hash = "' + hash + '"'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /*
    * Get transactions from address (limit by last 10 transactions)
    * @return {Promise} Axios promise (credit_amount, debit_amount, hash, created_time)
    */
@@ -220,7 +255,7 @@ class LBRY {
   }
 
   /*
-   * Get block info
+   * Get block info using hash
    * @return {Promise} Axios promise (block_size, height, block_time, difficulty, merkle_root, ...)
    */
   getBlockInfo (hash) {
@@ -240,12 +275,70 @@ class LBRY {
   }
 
   /*
+   * Get block info using block height
+   * @return {Promise} Axios promise (block_size, height, block_time, difficulty, merkle_root, ...)
+   */
+  getBlockHeightInfo (blockHeight) {
+    const query = 'SELECT bits, block_size, height, hash, version, nonce, block_time, confirmations, difficulty, chainwork, merkle_root ' +
+    'FROM block WHERE height = "' + blockHeight + '" LIMIT 1'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /*
    * Get last blocks (max. 10)
-   * @return {Promise} Axios promise (block_time, block_size, height, confirmations, difficulty)
+   * @return {Promise} Axios promise (block_time, block_size, height, difficulty)
    */
   getLastBlocks () {
-    const query = 'SELECT block_time, block_size, height, confirmations, difficulty ' +
+    const query = 'SELECT block_time, block_size, height, difficulty ' +
     'FROM block ORDER BY height DESC LIMIT 10'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /*
+   * Get last content claims (max. 10)
+   * @return {Promise} Axios promise (name, title, thumbnail_url, created_at)
+   */
+  getLastContentClaims () {
+    const query = 'SELECT name, title, thumbnail_url, created_at, content_type FROM claim WHERE claim_type = 1 ORDER BY id DESC LIMIT 10'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /*
+   * Get last channels claims (max. 10)
+   * @return {Promise} Axios promise (name => Channel name, created_at)
+   */
+  getLastChannelsClaims () {
+    const query = 'SELECT name, created_at FROM claim WHERE claim_type = 2 ORDER BY id DESC LIMIT 10'
     return axios.get(this.chainquery_api, {
       params: {
         query: query
@@ -286,6 +379,25 @@ class LBRY {
     return axios.get(this.subscriber_count_api)
       .then(response => {
         return Promise.resolve(response.data)
+      })
+  }
+
+  /*
+   * Get channel name from claim ID
+   * @return Promose (name)
+   */
+  async getChannelNameString (claimID) {
+    const query = 'SELECT name FROM claim WHERE claim_type = 2 AND claim_id = "' + claimID + '" LIMIT 1'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
       })
   }
 }
