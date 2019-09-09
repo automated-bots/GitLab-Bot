@@ -19,7 +19,12 @@ class LBRY {
     })
     // Public ChainQuery API
     this.chainquery_api = 'https://chainquery.lbry.com/api/sql'
-    // CoinMarketCap
+    // Internal-API (not-used atm)
+    // this.lbry_auth_token = auth_token
+    // this.lbry_api = 'https://api.lbry.com'
+    // Unofficial Brendon API
+    this.subscriber_count_api = 'https://www.brendonbrewer.com/lbrynomics/subscriber_counts.json'
+    // Official CoinMarketCap
     this.coinmarket_id = 1298 // 1298 = LBC
     this.coinmarket = axios.create({
       baseURL: 'https://pro-api.coinmarketcap.com/v1',
@@ -255,11 +260,11 @@ class LBRY {
   }
 
   /**
-   * Get the top 5 biggest transactions of this year (value in LBC)
+   * Get the top 10 biggest transactions of this year (value in LBC)
    * @return {Promise} Axios promise (hash, created_time, input_count, output_count, value, height)
    */
-  getBiggestTransactions () {
-    const query = 'SELECT transaction.hash, value, created_time, input_count, output_count, height from transaction LEFT JOIN block ON block.hash = transaction.block_hash_id WHERE year(created_time) = YEAR(CURDATE()) ORDER BY value DESC LIMIT 5'
+  getTop10BiggestTransactions () {
+    const query = 'SELECT transaction.hash, value, created_time, input_count, output_count, height from transaction LEFT JOIN block ON block.hash = transaction.block_hash_id WHERE year(created_time) = YEAR(CURDATE()) ORDER BY value DESC LIMIT 10'
     return axios.get(this.chainquery_api, {
       params: {
         query: query
@@ -270,6 +275,17 @@ class LBRY {
     })
       .then(response => {
         return Promise.resolve(response.data.data)
+      })
+  }
+
+  /**
+   * Get the top 100 channels (claim_type = 2) in respect to the subscribers depending on Brendon Brewer API for now until #127 issue is fixed in ChainQuery
+   * @return {Promise} Axios promise with JSON result (including vanity_names[] and subscribers[])
+   */
+  getTop100Channels () {
+    return axios.get(this.subscriber_count_api)
+      .then(response => {
+        return Promise.resolve(response.data)
       })
   }
 }

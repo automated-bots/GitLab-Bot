@@ -31,7 +31,7 @@ class Telegram {
 /transactions <address> - Get transactions from a specific address
 /block <hash> - Get block info
 /lastblocks - Get the last 10 blocks
-/top5 - Get top 5 biggest transactions, get top 10 highest amount channels
+/top10 - Top 10 biggest transactions & top 10 most subscribed channels
 
 /why - Why LBRY?
 /what - What is LBRY?
@@ -110,7 +110,7 @@ https://github.com/lbryio/lbry-desktop/releases`)
       let text = ''
       lbry.getLbryNetStatus()
         .then(result => {
-          text += `*General*
+          text += `*General* 🖧
 Lbrynet daemon running: ${result.is_running}
 Lbrynet connection: ${result.connection_status.code}`
         })
@@ -159,7 +159,7 @@ Peers connected: ${networkResult.connections}`
                     .then(walletResult => {
                       const oldestKeyTime = new Date(walletResult.keypoololdest * 1000)
                       text += `
-\n*Wallet info*
+\n*Wallet info* 👛
 Oldest address in keypool: ${oldestKeyTime}
 # of reserved addresses: ${walletResult.keypoolsize}`
                     })
@@ -219,6 +219,7 @@ Oldest address in keypool: ${oldestKeyTime}
       this.lbry.getNetworkInfo()
         .then(result => {
           var text = `
+*Network ℹ️*
 LBRY server version: ${result.version}
 Protocol version: ${result.protocolversion}
 Connections: ${result.connections}
@@ -238,7 +239,7 @@ Networks:`
         })
         .catch(error => {
           console.error(error)
-          this.bot.sendMessage(chatId, 'Could not fetch network info, still verifying blocks....')
+          this.bot.sendMessage(chatId, 'Could not fetch network info, still verifying blocks... Or can\'t connect to core deamon API.')
         })
     })
 
@@ -263,7 +264,7 @@ Networks:`
                   const exchangeRate24h = parseFloat(exchangeResult.exchange_rate24).toFixed(10)
                   const exchangeRate3d = parseFloat(exchangeResult.exchange_rate3).toFixed(10)
                   const exchangeRate7d = parseFloat(exchangeResult.exchange_rate7).toFixed(10)
-                  const text = `*General*
+                  const text = `*General* 🖥️
 Last block: ${medianTime}
 Median time current best block: ${result.mediantime}
 Hash best block: ${result.bestblockhash}
@@ -271,19 +272,19 @@ Net Hashrate: ${hashrateth} Thash/s
 Mempool size: ${miningResult.pooledtx}
 Market capital: ${marketCap}
 
-*Difficulty*
+*Difficulty* 🤯
 Difficulty: ${difficulty}
 Difficulty 24 hours avg: ${difficulty24h}
 Difficulty 3 days avg: ${difficulty3d}
 Difficulty 7 days avg: ${difficulty7d}
 
-*Reward*
+*Reward* 🤑
 Block time: ${blockTimeMin}m ${blockTimeSec}s
 Block reward: ${exchangeResult.block_reward} LBC
 Block reward 24 hours avg: ${exchangeResult.block_reward24} LBC
 Block reward 3 days avg: ${exchangeResult.block_reward3} LBC
 
-*Exchange*
+*Exchange* 💱
 Exchange rate: ${exchangeRate} BTC-LTC
 Exchange rate 24 hours avg: ${exchangeRate24h} BTC-LTC
 Exchange rate 3 days avg: ${exchangeRate3d} BTC-LTC
@@ -317,13 +318,16 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
           const volume7d = parseFloat(quote.volume_7d).toLocaleString('en', { maximumFractionDigits: 5 })
           const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { maximumFractionDigits: 5 })
           const marketCap = parseFloat(quote.market_cap).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-          const text = `*General*
+          const hourChangeIcon = (Math.sign(quote.percent_change_1h) === 1) ? '👍' : '👎'
+          const hour24ChangeIcon = (Math.sign(quote.percent_change_24h) === 1) ? '👍' : '👎'
+          const days7ChangeIcon = (Math.sign(quote.percent_change_7d) === 1) ? '👍' : '👎'
+          const text = `*General* 📈
 Rank on CoinMarketCap: [#${result.cmc_rank}](${COINMARKET_URL})
 Max. available coins: ${maxSupply} LBCs
 Current amount coins: ${totalSupply} LBCs
 Number of coins circulating: ${circulating} LBCs
 
-*Price*
+*Price* 💸
 Price: $${price}/LBC
 Volume 24 hour avg: ${volume24h} LBC
 Volume 7 days avg: ${volume7d} LBC
@@ -331,9 +335,9 @@ Volume 30 days avg: ${volume30d} LBC
 Market capital: $${marketCap}
 
 *% Change*
-Last hour: ${quote.percent_change_1h}%
-Last 24 hours: ${quote.percent_change_24h}%
-Last 7 days: ${quote.percent_change_7d}%`
+Last hour: ${quote.percent_change_1h}% ${hourChangeIcon}
+Last 24 hours: ${quote.percent_change_24h}% ${hour24ChangeIcon}
+Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
           this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
         })
         .catch(error => {
@@ -462,24 +466,40 @@ Last 7 days: ${quote.percent_change_7d}%`
         })
     })
 
-    // top5 command (/top5)
-    this.bot.onText(/[/|!]top5/, msg => {
+    // top10 command (/top10)
+    this.bot.onText(/[/|!]top10/, msg => {
       const chatId = msg.chat.id
-      this.lbry.getBiggestTransactions()
+      this.lbry.getTop10BiggestTransactions()
         .then(result => {
-          let textMsg = '*Biggest 4 transactions of this year*'
+          let textMsg = '*Top 10 biggest transactions of this year* 💰\n'
           for (let i = 0; i < result.length; i++) {
-            const amount = parseFloat(result[i].value).toLocaleString('en', { maximumFractionDigits: LBC_PRICE_FRACTION_DIGITS })            
-            textMsg += `
-    *Value:* ${amount} LBC
-    *Input count:* ${result[i].output_count}
-    *Output count:* ${result[i].output_count}
-    *Created at:* ${result[i].created_time}
-    *Height:* ${result[i].height}
-    [View Transaction](${EXPLORER_URL}/tx/${result[i].hash})
-    ------------------------------------------`
+            const amount = parseFloat(result[i].value).toLocaleString('en', { maximumFractionDigits: LBC_PRICE_FRACTION_DIGITS })
+            textMsg += `[${amount} LBC](${EXPLORER_URL}/tx/${result[i].hash}) (in: ${result[i].output_count}, out: ${result[i].output_count}) - ${result[i].created_time}\n`
           }
-          this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+          this.lbry.getTop100Channels()
+            .then(channelResult => {
+              // Retrieve the top 10 only
+              if (channelResult.vanity_names && channelResult.vanity_names.length >= 5) {
+                textMsg += '\n*Top 10 most subscribed channels*\n'
+                let medalIcon = null
+                for (let i = 0; i < 10; i++) {
+                  if (i === 0) {
+                    medalIcon = '🥇'
+                  } else if (i === 1) {
+                    medalIcon = '🥈'
+                  } else if (i === 2) {
+                    medalIcon = '🥉'
+                  } else {
+                    medalIcon = ''
+                  }
+                  textMsg += `${medalIcon} [${channelResult.vanity_names[i]}](${OPEN_URL}/${channelResult.vanity_names[i]}) (${channelResult.subscribers[i]} subscribers)\n`
+                }
+              }
+              this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+            })
+            .catch(error => {
+              console.error(error)
+            })
         })
         .catch(error => {
           console.error(error)
@@ -492,10 +512,10 @@ Last 7 days: ${quote.percent_change_7d}%`
         const name = msg.from.first_name
         if (msg.text.toString() === '!' || msg.text.toString() === '/') {
           this.bot.sendMessage(msg.chat.id, 'Please use /help or !help to get more info.')
-        } else if (msg.text.toString().toLowerCase().includes('hello')) {
-          this.bot.sendMessage(msg.chat.id, 'Welcome ' + name + '!')
+        } else if (msg.text.toString().toLowerCase().includes('hello') || msg.text.toString().toLowerCase().includes('hi')) {
+          this.bot.sendMessage(msg.chat.id, 'Welcome ' + name + ' 🤟!')
         } else if (msg.text.toString().toLowerCase().includes('bye')) {
-          this.bot.sendMessage(msg.chat.id, 'Hope to see you around again, *Bye ' + name + '*!', { parse_mode: 'markdown' })
+          this.bot.sendMessage(msg.chat.id, 'Hope to see you around again, 👋 *Bye ' + name + '* 👋!', { parse_mode: 'markdown' })
         }
       }
     })
