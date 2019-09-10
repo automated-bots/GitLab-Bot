@@ -8,9 +8,10 @@ const COINMARKET_URL = 'https://coinmarketcap.com/currencies/library-credit'
 const EXPLORER_URL = 'https://explorer.lbry.com'
 
 class Telegram {
-  constructor (bot, lbry) {
+  constructor (bot, lbry, exchange) {
     this.bot = bot
     this.lbry = lbry
+    this.exchange = exchange
   }
 
   /**
@@ -33,6 +34,8 @@ class Telegram {
 /top10 - Top 10 biggest transactions & top 10 most subscribed channels
 
 /file <uri> - Get meta file content
+/tips <name> - Get the top 10 tips of given name (channel or content)
+/contenttips <content URI> - Get the top 10 tips of given content
 /transaction <transaction> - Get transaction info
 /address <address> - Get address info
 /transactions <address> - Get last 10 transactions from an address
@@ -197,11 +200,11 @@ Oldest address in keypool: ${oldestKeyTime}
               const chatId = msg.chat.id
               const title = result.metadata.title
               const channelName = channelResult[0].name
-              let duration = 'N/A'
-              if (result.metadata.video.duration) {
+              let duration = ''
+              if (result.metadata.video) {
                 const durationMin = Math.floor(parseFloat(result.metadata.video.duration) / 60)
                 const durationSec = (((parseFloat(result.metadata.video.duration) / 60) % 2) * 60).toFixed(0)
-                duration = `${durationMin}m ${durationSec}s`
+                duration = `\n*Duration:* ${durationMin}m ${durationSec}s`
               }
               const thumbnail = result.metadata.thumbnail.url
               const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
@@ -210,8 +213,7 @@ Oldest address in keypool: ${oldestKeyTime}
               const textMsg = `
 *Title:* ${title}
 *Channel name:* [${channelName}](${OPEN_URL}/${channelName})
-*Media Type:* ${result.metadata.source.media_type}
-*Duration:* ${duration}
+*Media Type:* ${result.metadata.source.media_type}${duration}
 *Size:* ${fileSize} MB
 [Watch Online!](${publicURL})
 [Watch via LBRY App](${OPEN_URL}/${uriWithoutProtocol})`
@@ -232,7 +234,7 @@ Oldest address in keypool: ${oldestKeyTime}
       this.lbry.getNetworkInfo()
         .then(result => {
           var text = `
-*Network ℹ️*
+*Network* ℹ️
 LBRY server version: ${result.version}
 Protocol version: ${result.protocolversion}
 Connections: ${result.connections}
@@ -248,7 +250,7 @@ Networks:`
     Reachable: ${networks[i].reachable}
     -----------------------`
           }
-          this.bot.sendMessage(chatId, text)
+          this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
         })
         .catch(error => {
           console.error(error)
@@ -263,7 +265,7 @@ Networks:`
           this.lbry.getMiningInfo()
             .then(miningResult => {
               const hashrateth = (parseFloat(miningResult.networkhashps) / 1000.0 / 1000.0 / 1000.0 / 1000.0).toFixed(2)
-              this.lbry.getExchangeInfo()
+              this.exchange.getExchangeInfo()
                 .then(exchangeResult => {
                   const medianTime = new Date(result.mediantime * 1000)
                   const marketCap = exchangeResult.market_cap.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -319,7 +321,7 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
 
     // price command (/price)
     this.bot.onText(/[/|!]price@?\S*/, msg => {
-      this.lbry.getLatestPrices()
+      this.exchange.getLatestPrices()
         .then(result => {
           const chatId = msg.chat.id
           const quote = result.quote.USD
@@ -600,15 +602,93 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
         })
     })
 
+    // tips command
+    this.bot.onText(/[/|!]tips@?\S* (.+)/, (msg, match) => {
+      const name = match[1].trim()
+      const chatId = msg.chat.id
+      this.lbry.resolve(name)
+        .then(resolve => {
+          if (name in resolve) {
+            const channelOrContent = resolve[name]
+            this.lbry.getTop10Tips(channelOrContent.claim_id)
+              .then(tipsResult => {
+                if (tipsResult.length > 0) {
+                  let textMsg = '*Effective amount:* ' + channelOrContent.meta.effective_amount + ' LBC\n'
+                  textMsg += '*Top 10 highest tips*\n'
+                  for (let i = 0; i < tipsResult.length; i++) {
+                    const amount = parseFloat(tipsResult[i].amount).toLocaleString('en', { maximumFractionDigits: LBC_PRICE_FRACTION_DIGITS })
+                    textMsg += `[${amount} LBC](${EXPLORER_URL}/tx/${tipsResult[i].hash}) - ${tipsResult[i].created_at} - ${tipsResult[i].name}\n`
+                  }
+                  this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+                } else if ('error' in channelOrContent) {
+                  this.bot.sendMessage(chatId, 'Could not resolve the request 😢 (be-sure you start the channel name with @-sign)')
+                } else {
+                  this.bot.sendMessage(chatId, 'No tips received yet 😢')
+                }
+              })
+              .catch(error => {
+                console.error(error)
+              })
+          } else {
+            this.bot.sendMessage(chatId, 'Something went wrong with resolving 😢')
+          }
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    })
+    // TODO: Last channel tips?
+
+    // contenttips command
+    this.bot.onText(/[/|!]contenttips@?\S* (.+)/, (msg, match) => {
+      const contentName = match[1].trim()
+      const chatId = msg.chat.id
+      this.lbry.resolve(contentName)
+        .then(resolve => {
+          if (contentName in resolve) {
+            const content = resolve[contentName]
+            this.lbry.getTopContentTips(content.claim_id)
+              .then(tipsResult => {
+                if (tipsResult.length > 0) {
+                  this.lbry.getChannelNameString(tipsResult[0].publisher_id)
+                    .then(channelResult => {
+                      const channelName = channelResult[0].name
+                      let textMsg = `*Top 10 highest content tips* (channel: [${channelName}](${OPEN_URL}/${channelName}))\n`
+                      for (let i = 0; i < tipsResult.length; i++) {
+                        const amount = parseFloat(tipsResult[i].amount).toLocaleString('en', { maximumFractionDigits: LBC_PRICE_FRACTION_DIGITS })
+                        textMsg += `[${amount} LBC](${EXPLORER_URL}/tx/${tipsResult[i].hash}) - ${tipsResult[i].created_at} \n`
+                      }
+                      textMsg += `[View content](${OPEN_URL}/${content.permanent_url.replace(/(^\w+:|^)\/\//, '')})`
+                      this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+                    })
+                    .catch(error => {
+                      console.error(error)
+                    })
+                } else {
+                  this.bot.sendMessage(chatId, 'No tips received yet 😢')
+                }
+              })
+              .catch(error => {
+                console.error(error)
+              })
+          } else {
+            this.bot.sendMessage(chatId, 'Something went wrong with resolving 😢')
+          }
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    })
+
     // Other stuff
     this.bot.on('message', msg => {
       if (msg.text) {
         const name = msg.from.first_name
         if (msg.text.toString() === '!' || msg.text.toString() === '/') {
           this.bot.sendMessage(msg.chat.id, 'Please use /help or !help to get more info.')
-        } else if (msg.text.toString().toLowerCase().includes('hello') || msg.text.toString().toLowerCase().includes('hi')) {
+        } else if (msg.text.toString().toLowerCase().startsWith('hello') || msg.text.toString().toLowerCase().startsWith('hi')) {
           this.bot.sendMessage(msg.chat.id, 'Welcome ' + name + ' 🤟!')
-        } else if (msg.text.toString().toLowerCase().includes('bye')) {
+        } else if (msg.text.toString().toLowerCase().startsWith('bye')) {
           this.bot.sendMessage(msg.chat.id, 'Hope to see you around again, 👋 *Bye ' + name + '* 👋!', { parse_mode: 'markdown' })
         }
       }

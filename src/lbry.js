@@ -10,9 +10,8 @@ class LBRY {
    * @param {integer} lbrycrdPort
    * @param {string} lbrycrdRPCUser
    * @param {string} lbrycrdRPCPass
-   * @param {string} coinMarketAPI
    */
-  constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, lbrycrdRPCUser, lbrycrdRPCPass, coinMarketAPI) {
+  constructor (lbrynetHost, lbrynetPort, lbrycrdHost, lbrycrdPort, lbrycrdRPCUser, lbrycrdRPCPass) {
     // Local Lbrynet (SDK api)
     this.lbrynet = axios.create({
       baseURL: 'http://' + lbrynetHost + ':' + lbrynetPort,
@@ -34,20 +33,11 @@ class LBRY {
     // this.lbry_api = 'https://api.lbry.com'
     // Unofficial Brendon API
     this.subscriber_count_api = 'https://www.brendonbrewer.com/lbrynomics/subscriber_counts.json'
-    // Official CoinMarketCap
-    this.coinmarket_id = 1298 // 1298 = LBC
-    this.coinmarket = axios.create({
-      baseURL: 'https://pro-api.coinmarketcap.com/v1',
-      timeout: 10000,
-      headers: {
-        'X-CMC_PRO_API_KEY': coinMarketAPI
-      }
-    })
   }
 
-  /***********************************************
-  * Promise Getters                              *
-  ***********************************************/
+  /***************************
+  * LbryNet methods          *
+  ****************************/
 
   /**
    * Retrieve LBRYnet deamon information
@@ -63,6 +53,45 @@ class LBRY {
         return Promise.resolve(response.data.result)
       })
   }
+
+  /**
+   * Get content information by providing the uri
+   *
+   * @param {string} uri_address - uri
+   * @return {Promise} Axios promise
+   */
+  getMetaFileData (uriAddress) {
+    return this.lbrynet.post('/', {
+      method: 'get',
+      params: {
+        uri: uriAddress,
+        save_file: false
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
+  }
+
+  /*
+   * Resolve LBRY content file/channel from name
+   * @return Promose (address, claim_id, canonical_url, confirmations, height, permanent_url, short_url, signed_channel {}, and so much more...)
+   */
+  resolve (name) {
+    return this.lbrynet.post('/', {
+      method: 'resolve',
+      params: {
+        urls: name
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.result)
+      })
+  }
+
+  /***************************
+  * LBRY Core Daemon methods *
+  ****************************/
 
   /**
    * Get peer node info from LBRY core
@@ -88,25 +117,6 @@ class LBRY {
     return this.lbrycrd.post('/', {
       method: 'getwalletinfo',
       params: {}
-    })
-      .then(response => {
-        return Promise.resolve(response.data.result)
-      })
-  }
-
-  /**
-   * Get content information by providing the uri
-   *
-   * @param {string} uri_address - uri
-   * @return {Promise} Axios promise
-   */
-  getMetaFileData (uriAddress) {
-    return this.lbrynet.post('/', {
-      method: 'get',
-      params: {
-        uri: uriAddress,
-        save_file: false
-      }
     })
       .then(response => {
         return Promise.resolve(response.data.result)
@@ -163,36 +173,6 @@ class LBRY {
       })
   }
 
-  /**
-   * Get exchange info from Whattomine.com
-   *
-   * @return {Promise} Axios promise (block_time, block_reward, difficulty24, exchange_rate, exchange_rate24, market_cap)
-   */
-  getExchangeInfo () {
-    return axios.get('https://whattomine.com/coins/164.json')
-      .then(response => {
-        return Promise.resolve(response.data)
-      })
-  }
-
-  /**
-   * Get lastest prices (quotes) from CoinMarketCap
-   *
-   * @return {Promise} Axios promise
-   */
-  getLatestPrices () {
-    return this.coinmarket.get('/cryptocurrency/quotes/latest', {
-      params: {
-        id: this.coinmarket_id,
-        aux: 'num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,market_cap_by_total_supply,' +
-        'volume_24h_reported,volume_7d,volume_7d_reported,volume_30d,volume_30d_reported'
-      }
-    })
-      .then(response => {
-        return Promise.resolve(response.data.data[this.coinmarket_id])
-      })
-  }
-
   /*
    * Get address info
    * @return {Promise} Axios promise (id & balance)
@@ -214,10 +194,10 @@ class LBRY {
 
   /*
    * Get transaction info from hash
-   * @return {Promise} Axios promise (input_count, output_count, hash, created_at, value, fee, height, transaction_size)
+   * @return {Promise} Axios promise (input_count, output_count, hash, created_at, value, height, transaction_size, claim_id, title, name, thumbnail_url)
    */
   getTransaction (hash) {
-    const query = 'SELECT input_count, output_count, transaction.hash, transaction.created_at, value, block.height, transaction_size, claim.name, claim.title, claim.thumbnail_url ' +
+    const query = 'SELECT input_count, output_count, transaction.hash, transaction.created_at, value, block.height, transaction_size, claim.claim_id, claim.name, claim.title, claim.thumbnail_url ' +
     'FROM transaction LEFT JOIN block ON transaction.block_hash_id = block.hash LEFT JOIN claim ON claim.transaction_hash_id = transaction.hash ' +
     'WHERE transaction.hash = "' + hash + '"'
     return axios.get(this.chainquery_api, {
@@ -372,6 +352,58 @@ class LBRY {
   }
 
   /**
+   * Get the top 10 tips [indirect or direct] (amount in LBC, name could be the channel or content of that channel)
+   * Note: I still have the idea I also see support next to the tips
+   * @return {Promise} Axios promise (amount, created_at, name)
+   */
+  getTop10Tips (claimID) {
+    const query = 'SELECT support.support_amount amount, support.created_at, name, transaction.hash ' +
+    'FROM claim INNER JOIN support ON support.supported_claim_id = claim.claim_id ' +
+    'INNER JOIN transaction ON support.transaction_hash_id = transaction.hash ' +
+    'INNER JOIN output ON transaction.hash = output.transaction_hash ' +
+    'WHERE support.supported_claim_id = "' + claimID + '" OR publisher_id = "' + claimID + '" ' +
+    'AND output.address_list LIKE CONCAT("%", claim.claim_address, "%") ' +
+    'GROUP BY support.id, support.support_amount, support.created_at ' +
+    'ORDER BY support.support_amount DESC LIMIT 10'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /**
+   * Get the top 10 content tips (amount in LBC)
+   * @return {Promise} Axios promise (amount, created_at, name, publisher_id)
+   */
+  getTopContentTips (claimID) {
+    const query = 'SELECT support.support_amount amount, support.created_at, claim.name, claim.publisher_id, transaction.hash ' +
+    'FROM support INNER JOIN claim ON support.supported_claim_id = claim.claim_id ' +
+    'INNER JOIN transaction ON support.transaction_hash_id = transaction.hash ' +
+    'INNER JOIN output ON transaction.hash = output.transaction_hash WHERE claim.claim_id = "' + claimID + '" ' +
+    'AND claim.claim_type = 1 AND output.address_list LIKE CONCAT("%", claim.claim_address, "%") ' +
+    'GROUP BY support.id, support.support_amount, support.created_at ' +
+    'ORDER BY support.support_amount DESC LIMIT 10'
+    return axios.get(this.chainquery_api, {
+      params: {
+        query: query
+      },
+      paramsSerializer: params => {
+        return qs.stringify(params)
+      }
+    })
+      .then(response => {
+        return Promise.resolve(response.data.data)
+      })
+  }
+
+  /**
    * Get the top 100 channels (claim_type = 2) in respect to the subscribers depending on Brendon Brewer API for now until #127 issue is fixed in ChainQuery
    * @return {Promise} Axios promise with JSON result (including vanity_names[] and subscribers[])
    */
@@ -386,7 +418,7 @@ class LBRY {
    * Get channel name from claim ID
    * @return Promose (name)
    */
-  async getChannelNameString (claimID) {
+  getChannelNameString (claimID) {
     const query = 'SELECT name FROM claim WHERE claim_type = 2 AND claim_id = "' + claimID + '" LIMIT 1'
     return axios.get(this.chainquery_api, {
       params: {

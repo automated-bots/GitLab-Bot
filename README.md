@@ -97,10 +97,7 @@ For example append to crontab:
 @reboot /path/to/start_bot_prod.sh
 ```
 
-## Handy links / examples
+## Handy links 
 
 * [LBRY nomics from Brendon](https://github.com/eggplantbren/LBRYnomics)
 * [Brendon API](https://www.brendonbrewer.com/lbrynomics/)
-* Top 10 tips to Lunduke (claim id = `e8f68563d242f6ac9784dcbc41dd86c28a9391d6`), query: `SELECT claim.claim_id, support_amount, support.created_at, claim.title, channel.name FROM support LEFT JOIN claim ON support.supported_claim_id = claim.claim_id LEFT JOIN claim AS channel ON claim.publisher_id =channel.claim_id%20 WHERE channel.claim_type = 2 AND claim.publisher_id = 'e8f68563d242f6ac9784dcbc41dd86c28a9391d6' ORDER BY support.support_amount DESC LIMIT 10`
-
-**Important Note:** Be-aware currently we do not distinguish support vs tips! So the results above could also be support, created for trending section.

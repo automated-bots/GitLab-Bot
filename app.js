@@ -20,6 +20,7 @@ const TelegramBot = require('node-telegram-bot-api')
 const express = require('express')
 const bodyParser = require('body-parser')
 const LBRY = require('./src/lbry')
+const Exchange = require('./src/exchange')
 const Telegram = require('./src/telegram')
 const routes = require('./routes')
 
@@ -28,16 +29,18 @@ if (!TELEGRAM_TOKEN) {
   process.exit(1)
 }
 
+// Create helper objects
 const lbry = new LBRY(LBRYNET_HOST, LBRYNET_PORT,
-  LBRYCRD_HOST, LBRYCRD_PORT, LBRYCRD_RPC_USER, LBRYCRD_RPC_PASS,
-  COINMARKETCAP_API_TOKEN)
+  LBRYCRD_HOST, LBRYCRD_PORT, LBRYCRD_RPC_USER, LBRYCRD_RPC_PASS)
+const exchange = new Exchange(COINMARKETCAP_API_TOKEN)
 
 // TODO: Only create a TelegramBot object, when bot server is enabled for serving Telegram requests
+// Currently only Telegram is supported until futher notice.
 const telegramBot = new TelegramBot(TELEGRAM_TOKEN)
 // This informs the Telegram servers of the new webhook.
 telegramBot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
 
-const tel = new Telegram(telegramBot, lbry)
+const tel = new Telegram(telegramBot, lbry, exchange)
 
 // Create the Express app
 const app = express()
