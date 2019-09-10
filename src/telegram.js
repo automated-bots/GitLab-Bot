@@ -35,8 +35,8 @@ class Telegram {
 
 /file <uri> - Get meta file content
 /tips <name> - Get the top 10 tips of given name (channel or content)
-/contenttips <content URI> - Get the top 10 tips of given content
-/transaction <transaction> - Get transaction info
+/contenttips <content URI> - Get the top 10 tips of given content URI
+/transaction <hash> - Get transaction info
 /address <address> - Get address info
 /transactions <address> - Get last 10 transactions from an address
 /block <hash or block height> - Get block info
@@ -384,6 +384,11 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
         })
     })
 
+    this.bot.onText(/^[/|!]transaction\S*$/, msg => {
+      const chatId = msg.chat.id
+      this.bot.sendMessage(chatId, 'Error: Provide atleast the transaction hash as argument: /transaction <hash>')
+    })
+
     this.bot.onText(/[/|!]transaction@?\S* (.+)/, (msg, match) => {
       const hash = match[1].trim()
       const chatId = msg.chat.id
@@ -450,6 +455,11 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
         .catch(error => {
           console.error(error)
         })
+    })
+
+    this.bot.onText(/^[/|!]block\S*$/, msg => {
+      const chatId = msg.chat.id
+      this.bot.sendMessage(chatId, 'Error: Provide atleast the block hash or block height as argument: /block <hash or block height>')
     })
 
     // block command (/block <hash or block height>)
@@ -600,6 +610,11 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
         .catch(error => {
           console.error(error)
         })
+    })
+
+    this.bot.onText(/^[/|!]tips\S*$/, msg => {
+      const chatId = msg.chat.id
+      this.bot.sendMessage(chatId, 'Error: Provide atleast the name (like @channelname) as argument: /tips <name>')
     })
 
     // tips command

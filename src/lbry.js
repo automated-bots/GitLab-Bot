@@ -28,16 +28,17 @@ class LBRY {
     })
     // Public ChainQuery API
     this.chainquery_api = 'https://chainquery.lbry.com/api/sql'
+    // Unofficial Brendon API
+    this.subscriber_count_api = 'https://www.brendonbrewer.com/lbrynomics/subscriber_counts.json'
+
     // Internal-API (not-used atm)
     // this.lbry_auth_token = auth_token
     // this.lbry_api = 'https://api.lbry.com'
-    // Unofficial Brendon API
-    this.subscriber_count_api = 'https://www.brendonbrewer.com/lbrynomics/subscriber_counts.json'
   }
 
-  /***************************
-  * LbryNet methods          *
-  ****************************/
+  /****************************
+   * LbryNet methods          *
+   ****************************/
 
   /**
    * Retrieve LBRYnet deamon information
@@ -89,9 +90,9 @@ class LBRY {
       })
   }
 
-  /***************************
-  * LBRY Core Daemon methods *
-  ****************************/
+  /****************************
+   * LBRY Core Daemon methods *
+   ****************************/
 
   /**
    * Get peer node info from LBRY core
@@ -172,6 +173,10 @@ class LBRY {
         return Promise.resolve(response.data.result)
       })
   }
+
+  /****************************
+   * ChainQuery methods       *
+   ****************************/
 
   /*
    * Get address info
@@ -403,17 +408,6 @@ class LBRY {
       })
   }
 
-  /**
-   * Get the top 100 channels (claim_type = 2) in respect to the subscribers depending on Brendon Brewer API for now until #127 issue is fixed in ChainQuery
-   * @return {Promise} Axios promise with JSON result (including vanity_names[] and subscribers[])
-   */
-  getTop100Channels () {
-    return axios.get(this.subscriber_count_api)
-      .then(response => {
-        return Promise.resolve(response.data)
-      })
-  }
-
   /*
    * Get channel name from claim ID
    * @return Promose (name)
@@ -430,6 +424,21 @@ class LBRY {
     })
       .then(response => {
         return Promise.resolve(response.data.data)
+      })
+  }
+
+  /****************************
+   * Un-official APIs         *
+   ****************************/
+
+  /**
+   * Get the top 100 channels (claim_type = 2) in respect to the subscribers depending on Brendon Brewer API for now until #127 issue is fixed in ChainQuery
+   * @return {Promise} Axios promise with JSON result (including vanity_names[] and subscribers[])
+   */
+  getTop100Channels () {
+    return axios.get(this.subscriber_count_api)
+      .then(response => {
+        return Promise.resolve(response.data)
       })
   }
 }
