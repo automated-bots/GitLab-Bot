@@ -361,7 +361,7 @@ class LBRY {
     'FROM claim INNER JOIN support ON support.supported_claim_id = claim.claim_id ' +
     'INNER JOIN transaction ON support.transaction_hash_id = transaction.hash ' +
     'INNER JOIN output ON transaction.hash = output.transaction_hash ' +
-    'WHERE support.supported_claim_id = "' + claimID + '" OR publisher_id = "' + claimID + '" ' +
+    'WHERE (support.supported_claim_id = "' + claimID + '" OR publisher_id = "' + claimID + '") ' +
     'AND output.address_list LIKE CONCAT("%", claim.claim_address, "%") ' +
     'GROUP BY support.id, support.support_amount, support.created_at ' +
     'ORDER BY support.support_amount DESC LIMIT 10'
