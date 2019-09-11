@@ -10,7 +10,7 @@ const LBRYNET_PORT = process.env.LBRYNET_PORT || 5279
 const LBRYCRD_HOST = 'localhost'
 const LBRYCRD_PORT = process.env.LBRYCRD_PORT || 9245
 const LBRYCRD_RPC_USER = 'lbry'
-const LBRYCRD_RPC_PASS = 'xyz'
+const LBRYCRD_RPC_PASS = process.env.RPC_PASSWORD || 'xyz'
 const botUrl = 'https://lbry.melroy.org'
 const port = process.env.PORT || 3005
 

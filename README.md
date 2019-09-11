@@ -58,6 +58,7 @@ Create & Fill-in the applicable tokens in `tokens.env` file, by using the templa
 TELEGRAM_TOKEN=xyz
 DISCORD_TOKEN=xyz
 COINMARKETCAP_API_TOKEN=xyz
+RPC_PASSWORD=xyz
 ```
 
 Finally, starting the bot server: `npm start` (or `node app.js`)
