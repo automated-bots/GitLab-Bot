@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-NODE_ENV=production node app.js
+export $(cat tokens.env | xargs) && NODE_ENV=production node app.js
