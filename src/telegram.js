@@ -1,6 +1,8 @@
+const Misc = require('./miscellaneous')
+
+// Constants
 const LBC_PRICE_FRACTION_DIGITS = 5
 const DOLLAR_PRICE_FRACTION_DIGITS = 8
-
 const FAQ_URL = 'https://lbry.com/faq'
 const LBRY_TV_URL = 'https://beta.lbry.tv'
 const OPEN_URL = 'https://open.lbry.com'
@@ -95,19 +97,8 @@ https://github.com/lbryio/lbry-desktop/releases`)
     // Source: https://explorer.lbry.com/blocks/1
     this.bot.onText(/^[/|!]age\S*$/, msg => {
       const chatId = msg.chat.id
-      const age = Date.now() - 1466646592000 // timestamp ms since creation after genesis block
-      let seconds = Math.floor(age / 1000)
-      let minutes = Math.floor(seconds / 60)
-      seconds = seconds % 60
-      let hours = Math.floor(minutes / 60)
-      minutes = minutes % 60
-      let days = Math.floor(hours / 24)
-      hours = hours % 24
-      let months = Math.floor(days / 30)
-      days = days % 30
-      const years = Math.floor(months / 12)
-      months = months % 12
-      this.bot.sendMessage(chatId, `LBRY age: ${years} years, ${months} months, ${days} days, ${hours}h ${minutes}m ${seconds}s, since the first mined block exist.`)
+      const age = Misc.timestampToDate(Date.now() - 1466646592000) // timestamp ms since creation after genesis block
+      this.bot.sendMessage(chatId, `LBRY age: ${age.year} years, ${age.month} months, ${age.day} days, ${age.hour}h ${age.minute}m ${age.second}s, since the first mined block.`)
     })
 
     // status command (detailed status report)
@@ -146,8 +137,8 @@ Peers connected: ${networkResult.connections}`
                 .then(peerResult => {
                   text += '\nFirst peer details:'
                   if (peerResult.length > 0) {
-                    const sendTime = new Date(peerResult[0].lastsend * 1000)
-                    const recieveTime = new Date(peerResult[0].lastrecv * 1000)
+                    const sendTime = Misc.printDate(new Date(peerResult[0].lastsend * 1000))
+                    const recieveTime = Misc.printDate(new Date(peerResult[0].lastrecv * 1000))
                     const ping = parseFloat(peerResult[0].pingtime * 1000).toFixed(2)
                     text += `
     Ping: ${ping} ms
@@ -165,7 +156,7 @@ Peers connected: ${networkResult.connections}`
                   // always executed
                   lbry.getWalletInfo()
                     .then(walletResult => {
-                      const oldestKeyTime = new Date(walletResult.keypoololdest * 1000)
+                      const oldestKeyTime = Misc.printDate(new Date(walletResult.keypoololdest * 1000))
                       text += `
 \n*Wallet info* 👛
 Oldest address in keypool: ${oldestKeyTime}
@@ -267,7 +258,7 @@ Networks:`
               const hashrateth = (parseFloat(miningResult.networkhashps) / 1000.0 / 1000.0 / 1000.0 / 1000.0).toFixed(2)
               this.exchange.getExchangeInfo()
                 .then(exchangeResult => {
-                  const medianTime = new Date(result.mediantime * 1000)
+                  const medianTime = Misc.printDate(new Date(result.mediantime * 1000))
                   const marketCap = exchangeResult.market_cap.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                   const difficulty = parseFloat(result.difficulty).toLocaleString('en', { maximumFractionDigits: 3 })
                   const difficulty24h = parseFloat(exchangeResult.difficulty24).toLocaleString('en', { maximumFractionDigits: 3 })
@@ -465,7 +456,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
     // block command (/block <hash or block height>)
     this.bot.onText(/[/|!]block@?\S* (.+)/, (msg, match) => {
       function printBlockInfo (block) {
-        const blockTime = new Date(block.block_time * 1000)
+        const blockTime = Misc.printDate(new Date(block.block_time * 1000))
         const difficulty = parseFloat(block.difficulty).toLocaleString('en', { maximumFractionDigits: 2 })
         const textMsg = `
 *🧱 Height:* ${block.height}
@@ -474,7 +465,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
 *Size:* ${block.block_size} bytes
 *Bits:* ${block.bits}
 *Nonce:* ${block.nonce}
-*Block Time:* ${blockTime}
+*Time:* ${blockTime}
 *Version:* ${block.version}
 *Difficulty:* ${difficulty}
 *Chainwork:* ${block.chainwork}
@@ -482,12 +473,10 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
 [View Block](${EXPLORER_URL}/blocks/${block.height})`
         return textMsg
       }
-
       const hashOrHeight = match[1].trim()
       const chatId = msg.chat.id
-      var isHash = (hashOrHeight.match(/^([a-f0-9]{64})$/) != null)
-      if (isHash) {
-        // Retrieve block by hash
+      if (Misc.isSha256(hashOrHeight)) {
+        // Retrieved block by hash (sha256)
         this.lbry.getBlockInfo(hashOrHeight)
           .then(result => {
             if (result.length > 0) {
@@ -500,7 +489,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
             console.error(error)
           })
       } else {
-        // Retrieve block by block height
+        // Retrieved block by block height
         this.lbry.getBlockHeightInfo(hashOrHeight)
           .then(result => {
             if (result.length > 0) {
@@ -555,11 +544,11 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
           let textMsg = '*Last 10 blocks* 🧱'
           for (let i = 0; i < result.length; i++) {
             const block = result[i]
-            const blockTime = new Date(block.block_time * 1000)
+            const blockTime = Misc.printDate(new Date(block.block_time * 1000))
             const difficulty = parseFloat(block.difficulty).toLocaleString('en', { maximumFractionDigits: 3 })
             textMsg += `
     *Height:* ${block.height}
-    *Time:* ${blockTime.toLocaleDateString('en-US') + ' ' + blockTime.toLocaleTimeString('en-US')}
+    *Time:* ${blockTime}
     *Size:* ${block.block_size} bytes
     *Difficulty:* ${difficulty}
     [View Block](${EXPLORER_URL}/blocks/${block.height})
