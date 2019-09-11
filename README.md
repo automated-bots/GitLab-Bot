@@ -18,9 +18,9 @@ And thus eventually to serve the LBRY user (yes, you)!
 
 LBRY Bot is written in javascript (maybe TypeScript in the future) using [Node.js](https://nodejs.org/en/download/) with Express.
 
-LBRY Bot initually will use the [lbry-sdk](https://github.com/lbryio/lbry-sdk) in order to retrieve information from the LBRY (eg. blockchain status).
+LBRY Bot initually will use the [lbry-sdk](https://github.com/lbryio/lbry-sdk) (also known as `lbrynet`) in order to retrieve information from the LBRY (eg.  meta-data, resolve URLs and more).
 
-Later the [lbrycrd](https://github.com/lbryio/lbrycrd) raw API and the more efficient [Chainquery](https://github.com/lbryio/chainquery) will be used to retrieve  more information from the LBRY eco-system.
+The Bot also uses the [lbrycrd](https://github.com/lbryio/lbrycrd) API (for eg. blockchaininfo, network info, mining info). Last but not least, a more efficient [Chainquery](https://github.com/lbryio/chainquery) will be used to retrieve even more data like address, transactions, blocks, claims, channel info and more.
 
 ## Who?
 
@@ -58,7 +58,6 @@ Create & Fill-in the applicable tokens in `tokens.env` file, by using the templa
 TELEGRAM_TOKEN=xyz
 DISCORD_TOKEN=xyz
 COINMARKETCAP_API_TOKEN=xyz
-AUTH_TOKEN=xyz
 ```
 
 Finally, starting the bot server: `npm start` (or `node app.js`)
