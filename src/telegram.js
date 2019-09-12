@@ -314,7 +314,7 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
     this.bot.onText(/[/|!]price@?\S*/, msg => {
       this.exchange.getLatestPrices()
         .then(result => {
-          this.lbry.getExchangeInfo()
+          this.exchange.getExchangeInfo()
             .then(exchangeResult => {
               const chatId = msg.chat.id
               const bitcoinPrice = parseFloat(exchangeResult.exchange_rate).toFixed(10)
