@@ -89,13 +89,57 @@ Run test: `npm test`
 
 ## Production
 
-Use script: `start_bot_prod.sh`
+Starting the bot, can be done via:
 
-For example append to crontab:
+* `./start_bot_prod.sh`
+
+The bot can be started via crontab for example:
 
 ```sh
-@reboot /path/to/start_bot_prod.sh
+@reboot sh /path/to/start_bot_prod.sh
 ```
+
+**General setup:**
+
+* Be-sure both `lbrycrdd` and `lbrynet` binaries are installed into `/usr/bin` directory!
+* Create an user lbry the unix machine (`adduser -M lbry`)
+
+### LBRYcrd setup
+
+* Place the LBRYcrd file (`lbryd.conf`) in `/etc/lbry` for the LBRY Core Daemon service, example of this file:
+
+```sh
+rpcuser=lbry
+rpcpassword=my_secure_password
+daemon=1
+server=1
+txindex=1
+```
+
+* See [lbrycrd.service systemd file](lbrycrd.service) for Debian based distributions. Place this file into `/etc/systemd/system` folder.
+* Core data will be stored into `/var/lib/lbrycrd`
+
+### LBRYnet setup
+
+* Place the LBRYNet file (`lbrynet.yml`) in `/etc/lbry`, example of this file:
+
+```yml
+api: 127.0.0.1:5279
+streaming_server: 127.0.0.1:5280
+allowed_origin: localhost
+data_dir: /var/lib/lbrynet
+download_dir: /var/lib/lbrynet
+wallet_dir: /var/lib/lbryum
+save_files: false
+save_blobs: false
+max_key_fee:
+    currency: LBC
+    amount: 0
+use_keyring: false
+```
+
+* See [lbrynet.service systemd file](lbrynet.service). Place also inside `/etc/systemd/system`.
+* LBRYNet (SDK) data will be stored into `/var/lib/lbrynet`
 
 ## Handy links 
 
