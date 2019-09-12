@@ -325,9 +325,9 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
               const circulating = result.circulating_supply.toLocaleString('en', { maximumFractionDigits: 0 })
               const dollarPrice = quote.price.toLocaleString('en', { maximumFractionDigits: DOLLAR_PRICE_FRACTION_DIGITS })
               const dollarPriceLastUpdated = quote.last_updated
-              const volume24h = parseFloat(quote.volume_24h).toLocaleString('en', { maximumFractionDigits: 5 })
-              const volume7d = parseFloat(quote.volume_7d).toLocaleString('en', { maximumFractionDigits: 5 })
-              const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { maximumFractionDigits: 5 })
+              const volume24h = parseFloat(quote.volume_24h).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              const volume7d = parseFloat(quote.volume_7d).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
               const marketCap = parseFloat(quote.market_cap).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
               const hourChangeIcon = (Math.sign(quote.percent_change_1h) === 1) ? '👍' : '👎'
               const hour24ChangeIcon = (Math.sign(quote.percent_change_24h) === 1) ? '👍' : '👎'
@@ -343,9 +343,9 @@ Price: $${dollarPrice}/LBC
 Last updated dollar: ${dollarPriceLastUpdated}
 Price: 1 LBC = ${bitcoinPrice} BTC 
 Last updated BTC: ${bitcoinPriceDateTime}
-Volume 24 hour avg: ${volume24h} LBC
-Volume 7 days avg: ${volume7d} LBC
-Volume 30 days avg: ${volume30d} LBC
+Volume 24 hour avg: $${volume24h}
+Volume 7 days avg: $${volume7d}
+Volume 30 days avg: $${volume30d}
 Market capital: $${marketCap}
 
 *% Change*
