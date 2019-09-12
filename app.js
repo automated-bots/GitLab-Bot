@@ -35,7 +35,7 @@ const lbry = new LBRY(LBRYNET_HOST, LBRYNET_PORT,
 const exchange = new Exchange(COINMARKETCAP_API_TOKEN)
 
 // TODO: Only create a TelegramBot object, when bot server is enabled for serving Telegram requests
-// Currently only Telegram is supported until futher notice.
+
 const telegramBot = new TelegramBot(TELEGRAM_TOKEN)
 // This informs the Telegram servers of the new webhook.
 telegramBot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)

@@ -1,10 +1,10 @@
 class Misc {
   /**
    * Convert Date object to string
-   * @param {Date} - date 
+   * @param {Date} - date
    * @return {string} formatted date string
    */
-  static printDate(date) {
+  static printDate (date) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' }
     return date.toLocaleDateString('en-US', options) + ' ' + date.toLocaleTimeString('en-US')
   }
@@ -14,16 +14,16 @@ class Misc {
    * @param {string} - hash string
    * @return {Boolean} True if SHA256 otherwise false
    */
-  static isSha256(hash) {
+  static isSha256 (hash) {
     return hash.match(/^([a-f0-9]{64})$/) != null
   }
 
   /**
    * Convert timestamp to date (approximately)
-   * @param {Date} timestamp 
+   * @param {Date} timestamp
    * @turn {Dict} structure of year, month, day, hour, minute, second
    */
-  static timestampToDate(timestamp) {
+  static timestampToDate (timestamp) {
     let seconds = Math.floor(timestamp / 1000)
     let minutes = Math.floor(seconds / 60)
     seconds = seconds % 60
@@ -35,7 +35,7 @@ class Misc {
     days = days % 30
     const years = Math.floor(months / 12)
     months = months % 12
-    return {year: years, month: months, day: days, hour: hours, minute: minutes, second: seconds}
+    return { year: years, month: months, day: days, hour: hours, minute: minutes, second: seconds }
   }
 }
 
