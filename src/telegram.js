@@ -314,27 +314,35 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
     this.bot.onText(/[/|!]price@?\S*/, msg => {
       this.exchange.getLatestPrices()
         .then(result => {
-          const chatId = msg.chat.id
-          const quote = result.quote.USD
-          const maxSupply = result.max_supply.toLocaleString('en')
-          const totalSupply = result.total_supply.toLocaleString('en')
-          const circulating = result.circulating_supply.toLocaleString('en', { maximumFractionDigits: 0 })
-          const price = quote.price.toLocaleString('en', { maximumFractionDigits: DOLLAR_PRICE_FRACTION_DIGITS })
-          const volume24h = parseFloat(quote.volume_24h).toLocaleString('en', { maximumFractionDigits: 5 })
-          const volume7d = parseFloat(quote.volume_7d).toLocaleString('en', { maximumFractionDigits: 5 })
-          const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { maximumFractionDigits: 5 })
-          const marketCap = parseFloat(quote.market_cap).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-          const hourChangeIcon = (Math.sign(quote.percent_change_1h) === 1) ? '👍' : '👎'
-          const hour24ChangeIcon = (Math.sign(quote.percent_change_24h) === 1) ? '👍' : '👎'
-          const days7ChangeIcon = (Math.sign(quote.percent_change_7d) === 1) ? '👍' : '👎'
-          const text = `*General* 📈
+          this.lbry.getExchangeInfo()
+            .then(exchangeResult => {
+              const chatId = msg.chat.id
+              const bitcoinPrice = parseFloat(exchangeResult.exchange_rate).toFixed(10)
+              const bitcoinPriceDateTime = Misc.printDate(new Date(exchangeResult.timestamp * 1000))
+              const quote = result.quote.USD
+              const maxSupply = result.max_supply.toLocaleString('en')
+              const totalSupply = result.total_supply.toLocaleString('en')
+              const circulating = result.circulating_supply.toLocaleString('en', { maximumFractionDigits: 0 })
+              const dollarPrice = quote.price.toLocaleString('en', { maximumFractionDigits: DOLLAR_PRICE_FRACTION_DIGITS })
+              const dollarPriceLastUpdated = quote.last_updated
+              const volume24h = parseFloat(quote.volume_24h).toLocaleString('en', { maximumFractionDigits: 5 })
+              const volume7d = parseFloat(quote.volume_7d).toLocaleString('en', { maximumFractionDigits: 5 })
+              const volume30d = parseFloat(quote.volume_30d).toLocaleString('en', { maximumFractionDigits: 5 })
+              const marketCap = parseFloat(quote.market_cap).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+              const hourChangeIcon = (Math.sign(quote.percent_change_1h) === 1) ? '👍' : '👎'
+              const hour24ChangeIcon = (Math.sign(quote.percent_change_24h) === 1) ? '👍' : '👎'
+              const days7ChangeIcon = (Math.sign(quote.percent_change_7d) === 1) ? '👍' : '👎'
+              const text = `*General* 📈
 Rank on CoinMarketCap: [#${result.cmc_rank}](${COINMARKET_URL})
 Max. available coins: ${maxSupply} LBCs
 Current amount coins: ${totalSupply} LBCs
 Number of coins circulating: ${circulating} LBCs
 
 *Price* 💸
-Price: $${price}/LBC
+Price: $${dollarPrice}/LBC
+Last updated dollar: ${dollarPriceLastUpdated}
+Price: 1 LBC = ${bitcoinPrice} BTC 
+Last updated BTC: ${bitcoinPriceDateTime}
 Volume 24 hour avg: ${volume24h} LBC
 Volume 7 days avg: ${volume7d} LBC
 Volume 30 days avg: ${volume30d} LBC
@@ -344,7 +352,11 @@ Market capital: $${marketCap}
 Last hour: ${quote.percent_change_1h}% ${hourChangeIcon}
 Last 24 hours: ${quote.percent_change_24h}% ${hour24ChangeIcon}
 Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
-          this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
+              this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
+            })
+            .catch(error => {
+              console.error(error)
+            })
         })
         .catch(error => {
           console.error(error)
