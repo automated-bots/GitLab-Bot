@@ -3,6 +3,7 @@ const app = express()
 
 // We are receiving updates at the route below
 app.post(`/bot${TelegramSecretHash}`, (req, res) => {
+  console.log('yes?')
   app.get('telegram_bot').processUpdate(req.body)
   res.sendStatus(200)
 })
