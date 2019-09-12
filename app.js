@@ -38,7 +38,6 @@ const exchange = new Exchange(COINMARKETCAP_API_TOKEN)
 
 const telegramBot = new TelegramBot(TELEGRAM_TOKEN)
 // This informs the Telegram servers of the new webhook.
-console.log(`Wekbook: ${botUrl}/telegram/bot${TelegramSecretHash}`)
 telegramBot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
 
 const tel = new Telegram(telegramBot, lbry, exchange)
