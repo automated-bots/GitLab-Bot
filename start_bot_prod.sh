@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-screen -dmS bot bash -c 'export $(cat tokens.env | xargs) && NODE_ENV=production node app.js'
+screen -dmS bot bash -c 'export $(cat tokens.env | xargs) && NODE_ENV=production node src/index.js'

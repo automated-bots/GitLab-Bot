@@ -61,7 +61,7 @@ COINMARKETCAP_API_TOKEN=xyz
 RPC_PASSWORD=xyz
 ```
 
-Finally, starting the bot server: `npm start` (or `node app.js`)
+Finally, starting the bot server: `npm start` (or `node src/index.js`)
 
 **Note 1:** Reverse proxy (eg. Nginx) is required to put between the bot and the world-wide-web. Expose the webserver on port 443 (with SSL). See [nginx_example.conf](nginx_example.conf).
 
