@@ -16,7 +16,7 @@ And thus eventually to serve the LBRY user (yes, you)!
 
 ## How?
 
-LBRY Bot is written in javascript (maybe TypeScript in the future) using [Node.js](https://nodejs.org/en/download/) with Express.
+LBRY Bot is written in javascript using [Node.js](https://nodejs.org/en/download/).
 
 LBRY Bot initually will use the [lbry-sdk](https://github.com/lbryio/lbry-sdk) (also known as `lbrynet`) in order to retrieve information from the LBRY (eg.  meta-data, resolve URLs and more).
 
