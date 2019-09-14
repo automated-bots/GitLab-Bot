@@ -19,9 +19,9 @@ global.TelegramSecretHash = crypto.randomBytes(20).toString('hex')
 const TelegramBot = require('node-telegram-bot-api')
 const express = require('express')
 const bodyParser = require('body-parser')
-const LBRY = require('./src/lbry')
-const Exchange = require('./src/exchange')
-const Telegram = require('./src/telegram')
+const LBRY = require('./lbry')
+const Exchange = require('./exchange')
+const Telegram = require('./telegram')
 const routes = require('./routes')
 
 if (!TELEGRAM_TOKEN) {

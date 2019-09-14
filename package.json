@@ -2,15 +2,15 @@
   "name": "lbry-bot",
   "version": "0.1.0",
   "description": "A Botfather chat bot for LBRY. The one that rule them all!",
-  "main": "app.js",
+  "main": "src/index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "start": "export $(cat tokens.env | xargs) && node app.js",
+    "start": "export $(cat tokens.env | xargs) && node .",
     "test": "mocha --reporter spec",
-    "lint": "eslint . --ext .js",
-    "fix": "eslint . --ext .js --fix"
+    "lint": "eslint src --ext .js",
+    "fix": "eslint src --ext .js --fix"
   },
   "repository": {
     "type": "git",
