@@ -56,6 +56,21 @@ class LBRY {
   }
 
   /**
+   * Retrieve LBRYnet version
+   *
+   * @return {Promise} Axios promise
+   */
+  getLbryNetVersion () {
+    return this.lbrynet.post('/', {
+      method: 'version',
+      params: {}
+    })
+      .then(response => {
+        return Promise.resolve(response.data.result.lbrynet_version)
+      })
+  }
+
+  /**
    * Get content information by providing the uri
    *
    * @param {string} uri_address - uri

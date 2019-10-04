@@ -115,60 +115,72 @@ Lbrynet connection: ${result.connection_status.code}`
         })
         .catch(error => {
           console.error(error)
-          text += 'Error: Could not LBRYnet (SDK) info!\n'
+          text += 'Error: Could not retrieve LBRYnet (SDK) status!\n'
         })
         .then(function () {
           // always executed
-          lbry.getNetworkInfo()
-            .then(networkResult => {
+          lbry.getLbryNetVersion()
+            .then(lbryNetVersion => {
               text += `
+Lbrynet version: ${lbryNetVersion}`
+            })
+            .catch(error => {
+              console.error(error)
+              text += 'Error: Could not retrieve LBRYnet version!\n'
+            })
+            .then(function () {
+              // always executed
+              lbry.getNetworkInfo()
+                .then(networkResult => {
+                  text += `
 Lbrycrd version: ${networkResult.subversion}
 Protocol version: ${networkResult.protocolversion}
 \n*Peer info*
 Peers connected: ${networkResult.connections}`
-            })
-            .catch(error => {
-              console.error(error)
-              text += 'Error: Could not fetch network info!\n'
-            })
-            .then(function () {
-              // always executed
-              lbry.getPeerInfo()
-                .then(peerResult => {
-                  text += '\nFirst peer details:'
-                  if (peerResult.length > 0) {
-                    const sendTime = Misc.printDate(new Date(peerResult[0].lastsend * 1000))
-                    const recieveTime = Misc.printDate(new Date(peerResult[0].lastrecv * 1000))
-                    const ping = parseFloat(peerResult[0].pingtime * 1000).toFixed(2)
-                    text += `
-    Ping: ${ping} ms
-    Last send: ${sendTime}
-    Last receive: ${recieveTime}`
-                  } else {
-                    text += 'Warning: No peers connected...'
-                  }
                 })
                 .catch(error => {
                   console.error(error)
-                  text += 'Error: Could not fetch peer info!\n'
+                  text += 'Error: Could not fetch network info!\n'
                 })
                 .then(function () {
                   // always executed
-                  lbry.getWalletInfo()
-                    .then(walletResult => {
-                      const oldestKeyTime = Misc.printDate(new Date(walletResult.keypoololdest * 1000))
-                      text += `
-\n*Wallet info* 👛
-Oldest address in keypool: ${oldestKeyTime}
-# of reserved addresses: ${walletResult.keypoolsize}`
+                  lbry.getPeerInfo()
+                    .then(peerResult => {
+                      text += '\nFirst peer details:'
+                      if (peerResult.length > 0) {
+                        const sendTime = Misc.printDate(new Date(peerResult[0].lastsend * 1000))
+                        const recieveTime = Misc.printDate(new Date(peerResult[0].lastrecv * 1000))
+                        const ping = parseFloat(peerResult[0].pingtime * 1000).toFixed(2)
+                        text += `
+    Ping: ${ping} ms
+    Last send: ${sendTime}
+    Last receive: ${recieveTime}`
+                      } else {
+                        text += 'Warning: No peers connected...'
+                      }
                     })
                     .catch(error => {
                       console.error(error)
-                      text += 'Error: Could not fetch wallet info!\n'
+                      text += 'Error: Could not fetch peer info!\n'
                     })
                     .then(function () {
-                      // always executed, finally we send the info back!
-                      bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
+                      // always executed
+                      lbry.getWalletInfo()
+                        .then(walletResult => {
+                          const oldestKeyTime = Misc.printDate(new Date(walletResult.keypoololdest * 1000))
+                          text += `
+\n*Wallet info* 👛
+Oldest address in keypool: ${oldestKeyTime}
+# of reserved addresses: ${walletResult.keypoolsize}`
+                        })
+                        .catch(error => {
+                          console.error(error)
+                          text += 'Error: Could not fetch wallet info!\n'
+                        })
+                        .then(function () {
+                          // always executed, finally we send the info back!
+                          bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
+                        })
                     })
                 })
             })
@@ -653,6 +665,11 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
         })
     })
     // TODO: Last channel tips?
+
+    this.bot.onText(/^[/|!]contenttips\S*$/, msg => {
+      const chatId = msg.chat.id
+      this.bot.sendMessage(chatId, 'Error: Provide atleast the LBRY URI as argument: /contenttips <URI>')
+    })
 
     // contenttips command
     this.bot.onText(/[/|!]contenttips@?\S* (.+)/, (msg, match) => {
