@@ -180,7 +180,7 @@ Oldest address in keypool: ${oldestKeyTime}
       this.bot.sendMessage(chatId, 'Error: Provide atleast the URI as argument: /file <uri>')
     })
 
-    // fileinfo command (/file <uri>)
+    // file command (/file <uri>)
     this.bot.onText(/[/|!]file@?\S* (.+)/, (msg, match) => {
       const uri = match[1].trim()
       this.lbry.getMetaFileData(uri)
@@ -197,7 +197,6 @@ Oldest address in keypool: ${oldestKeyTime}
                 const durationSec = (((parseFloat(result.metadata.video.duration) / 60) % 2) * 60).toFixed(0)
                 duration = `\n*Duration:* ${durationMin}m ${durationSec}s`
               }
-              const thumbnail = result.metadata.thumbnail.url
               const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
               const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
               const publicURL = LBRY_TV_URL + '/' + uriWithoutProtocol
@@ -209,7 +208,7 @@ Oldest address in keypool: ${oldestKeyTime}
 [Watch Online!](${publicURL})
 [Watch via LBRY App](${OPEN_URL}/${uriWithoutProtocol})`
               this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
-              if (thumbnail) { this.bot.sendPhoto(chatId, thumbnail, { caption: 'Thumbnail: ' + title }) }
+              // Disable thumbnail: if (thumbnail) { this.bot.sendPhoto(chatId, result.metadata.thumbnail.url, { caption: 'Thumbnail: ' + title }) }
             })
             .catch(error => {
               console.error(error)
@@ -291,10 +290,10 @@ Block reward 24 hours avg: ${exchangeResult.block_reward24} LBC
 Block reward 3 days avg: ${exchangeResult.block_reward3} LBC
 
 *Exchange* 💱
-Exchange rate: ${exchangeRate} BTC-LTC
-Exchange rate 24 hours avg: ${exchangeRate24h} BTC-LTC
-Exchange rate 3 days avg: ${exchangeRate3d} BTC-LTC
-Exchange rate 7 days avg: ${exchangeRate7d} BTC-LTC`
+Exchange rate: ${exchangeRate} BTC-LBC
+Exchange rate 24 hours avg: ${exchangeRate24h} BTC-LBC
+Exchange rate 3 days avg: ${exchangeRate3d} BTC-LBC
+Exchange rate 7 days avg: ${exchangeRate7d} BTC-LBC`
                   this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
                 })
                 .catch(error => {
