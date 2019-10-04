@@ -6,6 +6,8 @@ Botfather for [LBRY](https://lbry.com/) - Which knows everything you want to kno
 
 A Botfather chat bot for LBRY. The one that rule them all!
 
+Open [@LBRY_telegram_bot](https://telegram.me/LBRY_telegram_bot) in Telegram.
+
 ## Why?
 
 LBRY Bot can be used in chat applications like IRC, [Telegram](https://telegram.org/apps) or Discord to parse requests from clients and return useful information about LBRY.
