@@ -28,7 +28,7 @@ Hi, it's me: Melroy van den Berg.
 
 ## When?
 
-Currently busy programming.... Please hold the line.
+Bot is live and available in Telegram: [@LBRY_telegram_bot](https://telegram.me/LBRY_telegram_bot).
 
 ## Develop
 
