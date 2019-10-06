@@ -58,7 +58,7 @@ class LBRY {
   /**
    * Retrieve LBRYnet version
    *
-   * @return {Promise} Axios promise
+   * @return {Number} LBRYnet version
    */
   getLbryNetVersion () {
     return this.lbrynet.post('/', {
