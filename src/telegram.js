@@ -110,8 +110,13 @@ https://github.com/lbryio/lbry-desktop/releases`)
       lbry.getLbryNetStatus()
         .then(result => {
           text += `*General* 🖥
-Lbrynet daemon running: ${result.is_running}
-Lbrynet connection: ${result.connection_status.code}`
+Lbrynet Daemon Running: ${result.is_running}
+Lbrynet Connection status: ${result.connection_status.code}
+Lbrynet Block Headers status: ${result.result.startup_status.blockchain_headers}
+Lbrynet DHT status: ${result.result.startup_status.dht}
+Lbrynet Hash Announcer Status: ${result.result.startup_status.hash_announcer}
+Lbrynet P2P server status: ${result.result.startup_status.peer_protocol_server}
+Lbrynet DB status: ${result.result.startup_status.database}`
         })
         .catch(error => {
           console.error(error)
