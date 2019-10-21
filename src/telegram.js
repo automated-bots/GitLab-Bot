@@ -200,39 +200,43 @@ Oldest address in keypool: ${oldestKeyTime}
     // file command (/file <uri>)
     this.bot.onText(/[/|!]file@?\S* (.+)/, (msg, match) => {
       const uri = match[1].trim()
+      const chatId = msg.chat.id
       this.lbry.getMetaFileData(uri)
         .then(result => {
-          // Retrieve the channel name as well
-          this.lbry.getChannelNameString(result.channel_claim_id)
-            .then(channelResult => {
-              const chatId = msg.chat.id
-              const title = result.metadata.title
-              const channelName = channelResult[0].name
-              let duration = ''
-              if (result.metadata.video) {
-                const durationMin = Math.floor(parseFloat(result.metadata.video.duration) / 60)
-                const durationSec = (((parseFloat(result.metadata.video.duration) / 60) % 2) * 60).toFixed(0)
-                duration = `\n*Duration:* ${durationMin}m ${durationSec}s`
-              }
-              const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
-              const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
-              const publicURL = LBRY_TV_URL + '/' + uriWithoutProtocol
-              const textMsg = `
-*Title:* ${title}
-*Channel name:* [${channelName}](${OPEN_URL}/${channelName})
-*Media Type:* ${result.metadata.source.media_type}${duration}
-*Size:* ${fileSize} MB
-[Watch Online!](${publicURL})
-[Watch via LBRY App](${OPEN_URL}/${uriWithoutProtocol})`
-              this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
-              // Disable thumbnail: if (thumbnail) { this.bot.sendPhoto(chatId, result.metadata.thumbnail.url, { caption: 'Thumbnail: ' + title }) }
-            })
-            .catch(error => {
-              console.error(error)
-            })
-            .catch(error => {
-              console.error(error)
-            })
+          if ('error' in result) {
+            this.bot.sendMessage(chatId, 'Error: ' + result.error, { parse_mode: 'markdown' })
+          } else {
+            // Retrieve the channel name as well
+            this.lbry.getChannelNameString(result.channel_claim_id)
+              .then(channelResult => {
+                const title = result.metadata.title
+                const channelName = channelResult[0].name
+                let duration = ''
+                if (result.metadata.video) {
+                  const durationMin = Math.floor(parseFloat(result.metadata.video.duration) / 60)
+                  const durationSec = (((parseFloat(result.metadata.video.duration) / 60) % 2) * 60).toFixed(0)
+                  duration = `\n*Duration:* ${durationMin}m ${durationSec}s`
+                }
+                const fileSize = parseFloat(result.metadata.source.size / Math.pow(1024, 2)).toFixed(2) // To Megabyte
+                const uriWithoutProtocol = uri.replace(/(^\w+:|^)\/\//, '')
+                const publicURL = LBRY_TV_URL + '/' + uriWithoutProtocol
+                const textMsg = `
+  *Title:* ${title}
+  *Channel name:* [${channelName}](${OPEN_URL}/${channelName})
+  *Media Type:* ${result.metadata.source.media_type}${duration}
+  *Size:* ${fileSize} MB
+  [Watch Online!](${publicURL})
+  [Watch via LBRY App](${OPEN_URL}/${uriWithoutProtocol})`
+                this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
+                // Disable thumbnail: if (thumbnail) { this.bot.sendPhoto(chatId, result.metadata.thumbnail.url, { caption: 'Thumbnail: ' + title }) }
+              })
+              .catch(error => {
+                console.error(error)
+              })
+          }
+        })
+        .catch(error => {
+          console.error(error)
         })
     })
 
