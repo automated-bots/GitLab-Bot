@@ -51,7 +51,12 @@ class LBRY {
       params: {}
     })
       .then(response => {
-        return Promise.resolve(response.data.result)
+        if (response.data.error) {
+          console.error('Error: ' + response.data.error.message)
+          return Promise.reject(new Error(response.data.error.message))
+        } else {
+          return Promise.resolve(response.data.result)
+        }
       })
   }
 
@@ -66,7 +71,12 @@ class LBRY {
       params: {}
     })
       .then(response => {
-        return Promise.resolve(response.data.result.lbrynet_version)
+        if (response.data.error) {
+          console.error('Error: ' + response.data.error.message)
+          return Promise.reject(new Error(response.data.error.message))
+        } else {
+          return Promise.resolve(response.data.result.lbrynet_version)
+        }
       })
   }
 
@@ -85,7 +95,12 @@ class LBRY {
       }
     })
       .then(response => {
-        return Promise.resolve(response.data.result)
+        if (response.data.error) {
+          console.error('Error: ' + response.data.error.message)
+          return Promise.reject(new Error(response.data.error.message))
+        } else {
+          return Promise.resolve(response.data.result)
+        }
       })
   }
 
@@ -101,7 +116,12 @@ class LBRY {
       }
     })
       .then(response => {
-        return Promise.resolve(response.data.result)
+        if (response.data.error) {
+          console.error('Error: ' + response.data.error.message)
+          return Promise.reject(new Error(response.data.error.message))
+        } else {
+          return Promise.resolve(response.data.result)
+        }
       })
   }
 

@@ -119,7 +119,7 @@ Lbrynet P2P server status: ${result.startup_status.peer_protocol_server}
 Lbrynet DB status: ${result.startup_status.database}`
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
           text += 'Error: Could not retrieve LBRYnet (SDK) status!\n'
         })
         .then(function () {
@@ -130,7 +130,7 @@ Lbrynet DB status: ${result.startup_status.database}`
 Lbrynet version: ${lbryNetVersion}`
             })
             .catch(error => {
-              console.error(error)
+              console.error(error.message)
               text += 'Error: Could not retrieve LBRYnet version!\n'
             })
             .then(function () {
@@ -144,7 +144,7 @@ Protocol version: ${networkResult.protocolversion}
 Peers connected: ${networkResult.connections}`
                 })
                 .catch(error => {
-                  console.error(error)
+                  console.error(error.message)
                   text += 'Error: Could not fetch network info!\n'
                 })
                 .then(function () {
@@ -165,7 +165,7 @@ Peers connected: ${networkResult.connections}`
                       }
                     })
                     .catch(error => {
-                      console.error(error)
+                      console.error(error.message)
                       text += 'Error: Could not fetch peer info!\n'
                     })
                     .then(function () {
@@ -179,7 +179,7 @@ Oldest address in keypool: ${oldestKeyTime}
 # of reserved addresses: ${walletResult.keypoolsize}`
                         })
                         .catch(error => {
-                          console.error(error)
+                          console.error(error.message)
                           text += 'Error: Could not fetch wallet info!\n'
                         })
                         .then(function () {
@@ -231,12 +231,12 @@ Oldest address in keypool: ${oldestKeyTime}
                 // Disable thumbnail: if (thumbnail) { this.bot.sendPhoto(chatId, result.metadata.thumbnail.url, { caption: 'Thumbnail: ' + title }) }
               })
               .catch(error => {
-                console.error(error)
+                console.error(error.message)
               })
           }
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -264,7 +264,7 @@ Networks:`
           this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
           this.bot.sendMessage(chatId, 'Could not fetch network info, still verifying blocks... Or can\'t connect to core deamon API.')
         })
     })
@@ -318,15 +318,15 @@ Exchange rate 7 days avg: ${exchangeRate7d} BTC-LBC`
                   this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
                 })
                 .catch(error => {
-                  console.error(error)
+                  console.error(error.message)
                 })
             })
             .catch(error => {
-              console.error(error)
+              console.error(error.message)
             })
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -375,11 +375,11 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
               this.bot.sendMessage(chatId, text, { parse_mode: 'markdown' })
             })
             .catch(error => {
-              console.error(error)
+              console.error(error.message)
             })
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -403,7 +403,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
           }
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -434,7 +434,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
           if (currentTransaction.thumbnail_url) { this.bot.sendPhoto(chatId, currentTransaction.thumbnail_url, { caption: 'Thumbnail: ' + currentTransaction.title }) }
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -469,14 +469,14 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
                 }
               })
               .catch(error => {
-                console.error(error)
+                console.error(error.message)
               })
           } else {
             this.bot.sendMessage(chatId, 'Address not found')
           }
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -518,7 +518,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
             }
           })
           .catch(error => {
-            console.error(error)
+            console.error(error.message)
           })
       } else {
         // Retrieved block by block height
@@ -547,7 +547,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
           this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -564,7 +564,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
           this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -589,7 +589,7 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
           this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -625,11 +625,11 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
               this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
             })
             .catch(error => {
-              console.error(error)
+              console.error(error.message)
             })
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
@@ -663,14 +663,14 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
                 }
               })
               .catch(error => {
-                console.error(error)
+                console.error(error.message)
               })
           } else {
             this.bot.sendMessage(chatId, 'Something went wrong with resolving 😢')
           }
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
     // TODO: Last channel tips?
@@ -703,21 +703,21 @@ Last 7 days: ${quote.percent_change_7d}% ${days7ChangeIcon}`
                       this.bot.sendMessage(chatId, textMsg, { parse_mode: 'markdown' })
                     })
                     .catch(error => {
-                      console.error(error)
+                      console.error(error.message)
                     })
                 } else {
                   this.bot.sendMessage(chatId, 'No tips received yet 😢')
                 }
               })
               .catch(error => {
-                console.error(error)
+                console.error(error.message)
               })
           } else {
             this.bot.sendMessage(chatId, 'Something went wrong with resolving 😢')
           }
         })
         .catch(error => {
-          console.error(error)
+          console.error(error.message)
         })
     })
 
