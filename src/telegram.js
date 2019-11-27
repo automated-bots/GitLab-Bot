@@ -204,15 +204,17 @@ Oldest address in keypool: ${oldestKeyTime}
       this.lbry.getMetaFileData(uri)
         .then(result => {
           if (typeof result === 'undefined') {
-            this.bot.sendMessage(chatId, 'Error: meta data result is undefined. Something went wrong.', { parse_mode: 'markdown' })
+            this.bot.sendMessage(chatId, 'Error: meta data result is undefined. Something went wrong. File search: ' + uri, { parse_mode: 'markdown' })
           } else if ('error' in result) {
             this.bot.sendMessage(chatId, 'Error: ' + result.error, { parse_mode: 'markdown' })
           } else {
             // Retrieve the channel name as well
             this.lbry.getChannelNameString(result.channel_claim_id)
               .then(channelResult => {
-                if (typeof channelResult === 'undefined') {
-                  this.bot.sendMessage(chatId, 'Error: channel result is undefined. Something went wrong.', { parse_mode: 'markdown' })
+                if (typeof channelResult === 'undefined' || channelResult.length <= 0) {
+                  this.bot.sendMessage(chatId, 'Error: Channel result is undefined or file not found (invalid claim id). File search: ' + uri, { parse_mode: 'markdown' })
+                } else if('error' in channelResult) {
+                  this.bot.sendMessage(chatId, 'Error: ' + result.error, {parse_mode: 'markdown'})
                 } else {
                   const title = result.metadata.title
                   const channelName = channelResult[0].name
