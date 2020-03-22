@@ -77,6 +77,11 @@ rpcpassword=xyz
 daemon=1
 server=1
 txindex=1
+
+# The following options are optional (to reduce memory load)
+#blocksonly=1 
+#dbcache=20
+#maxmempool=200
 ```
 
 ### Linting
