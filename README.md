@@ -113,7 +113,7 @@ The bot can be started via crontab for example:
 
 ### LBRYcrd setup
 
-* Place the LBRYcrd file (`lbryd.conf`) in `/etc/lbry` for the LBRY Core Daemon service, example of this file:
+* Create the LBRYcrd file (`lbryd.conf`) in `/etc/lbry` (so: `/etc/lbry/lbryd.conf`) for the LBRY Core Daemon service, example of this file:
 
 ```sh
 rpcuser=lbry
@@ -121,6 +121,11 @@ rpcpassword=my_secure_password
 daemon=1
 server=1
 txindex=1
+
+# The following options are optional (to reduce memory load)
+blocksonly=1
+dbcache=20
+maxmempool=200
 ```
 
 * See [lbrycrd.service systemd file](lbrycrd.service) for Debian based distributions. Place this file into `/etc/systemd/system` folder.
