@@ -14,8 +14,7 @@ Description=LBRY Core daemon
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/lbrycrdd -daemon \
-                            -pid=/run/lbrycrd/lbrycrd.pid \
+ExecStart=/usr/bin/lbrycrdd -pid=/run/lbrycrd/lbrycrd.pid \
                             -conf=/etc/lbry/lbryd.conf \
                             -datadir=/var/lib/lbrycrd
 
