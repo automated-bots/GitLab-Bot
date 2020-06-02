@@ -14,3 +14,9 @@ lint:
   script:
   - npm run lint
 
+audit:
+  stage: test
+  tags:
+  - nodejs
+  script:
+  - npm audit
