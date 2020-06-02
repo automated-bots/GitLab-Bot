@@ -2,7 +2,7 @@ before_script:
   - npm install
 
 cache:
-  key: "$CI_PIPELINE_ID"
+  key: "$CI_COMMIT_REF_SLUG"
   untracked: true
   paths:
   - node_modules
