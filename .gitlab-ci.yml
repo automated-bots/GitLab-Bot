@@ -10,7 +10,7 @@ cache:
 lint:
   stage: test
   tags:
-  - test
+  - nodejs
   script:
   - npm run lint
 
