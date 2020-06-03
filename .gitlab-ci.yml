@@ -1,11 +1,11 @@
-before_script:
-  - npm install
-
 cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  untracked: true
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
-  - node_modules
+  - node_modules/
+  - .npm/
+  
+before_script:
+  - npm i --cache .npm --prefer-offline
 
 lint:
   stage: test
