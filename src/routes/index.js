@@ -1,12 +1,14 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const router = express.Router();
 const aboutRoute = require('./about')
 const telegramRoute = require('./telegram')
+const gitlabRoute = require('./gitlab')
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to LBRY bot' })
+router.get('/', (req, res) => {
+    res.json({ message: 'Welcome to the GitLab-Telegram bot' })
 })
-  .use('/about', aboutRoute)
-  .use('/telegram', telegramRoute)
+    .use('/about', aboutRoute)
+    .use('/telegram', telegramRoute)
+    .use('/gitlab', gitlabRoute)
 
-module.exports = app
+module.exports = router;
