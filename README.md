@@ -155,5 +155,6 @@ use_keyring: false
 
 ## Handy links 
 
-* [LBRY nomics from Brendon](https://github.com/eggplantbren/LBRYnomics)
-* [Brendon API](https://www.brendonbrewer.com/lbrynomics/)
+* [LBRYnomics](https://lbrynomics.com)
+* [LBRY Trending algos](https://github.com/eggplantbren/lbry-trending-algos)
+
