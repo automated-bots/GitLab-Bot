@@ -31,6 +31,11 @@ if (isTelegramEnabled === 'true') {
   // This informs the Telegram servers of the new webhook.
   bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
   app.set('telegram_bot', bot)
+  bot.onText(/\/start/, (msg) => {
+    console.log('Set chat id: ' + msg.chat.id)
+    app.set('chat_id', msg.chat.id)
+  })
+
   /* bot.getChat('@LibreWeb', function (msg) {
     console.log(msg)
   }) */
