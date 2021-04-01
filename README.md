@@ -35,7 +35,7 @@ Also notice you could *unselect* the Push events (which is enabled by default).
 
 ## Development
 
-Requirements:
+### Requirements
 
 * [Node.js v14](https://nodejs.org/en/download/) with npm
 
@@ -44,10 +44,9 @@ curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-Clone this project. And install the depedencies via: `npm install`.
+### Getting started
 
-Provide the telegram secret via environment variable `TELEGRAM_TOKEN` and finally you can start the bot via:
-
-```sh
-npm start
-```
+1. Clone the git project;
+2. Install the NodeJS depedencies via: `npm install`;
+3. Provide the telegram secret via environment variable (set `TELEGRAM_TOKEN`), as well as your public URL environment variable (set `URL`, eg. `https://bot.mydomain.com` when behind a reverse proxy);
+4. To start the bot, by executing: `npm start`.

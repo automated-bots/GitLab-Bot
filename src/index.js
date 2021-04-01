@@ -3,7 +3,7 @@ process.env.NTBA_FIX_319 = 1
 process.env.NTBA_FIX_350 = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
-const botUrl = 'https://gitlabbot.melroy.org'
+const botUrl = process.env.URL || 'https://gitlabbot.melroy.org'
 const port = process.env.PORT || 3005
 
 const createError = require('http-errors')
