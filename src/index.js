@@ -24,6 +24,8 @@ if (isTelegramEnabled === 'true') {
   if (!TELEGRAM_TOKEN) {
     console.error('\x1b[31mERROR: Provide your Telegram token, by setting the TELEGRAM_TOKEN enviroment variable first! See README.md.\nExit.\x1b[0m')
     process.exit(1)
+  } else {
+    console.log('Info: Telegram bot will be enabled.')
   }
   const bot = new TelegramBot(TELEGRAM_TOKEN)
   // This informs the Telegram servers of the new webhook.
