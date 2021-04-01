@@ -30,8 +30,6 @@ if (isTelegramEnabled === 'true') {
   bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
   app.set('telegram_bot', bot)
   bot.getChat('@libreweb', function (msg) {
-    console.log('id: ' + msg.chat.id)
-    console.log('Or chat id: ' + msg.chat.chatId)
     console.log(msg)
   })
 }
