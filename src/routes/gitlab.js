@@ -23,15 +23,23 @@ router.post('/', (req, res) => {
             case 'open':
               msg += '🐞 New issue created by: ' + user.name
               msg += ' - [' + item.title + '](' + item.url + ')'
+              console.log(msg)
+              break
+            case 'reopen':
+              msg += '🐞 Issue re-opened by: ' + user.name
+              msg += ' - [' + item.title + '](' + item.url + ')'
+              console.log(msg)
+              break
+            case 'close':
+              msg += '🐞 Issue closed by: ' + user.name
+              msg += ' - [' + item.title + '](' + item.url + ')'
+              console.log(msg)
               break
           }
-          console.log(msg)
         }
       }
         break
       case 'merge_request': {
-        console.log('Merge request: ')
-        console.log(body)
         // Only new & merged MRs will be reported
         const item = body.object_attributes
         const user = body.user
@@ -41,19 +49,28 @@ router.post('/', (req, res) => {
             case 'open':
               msg += '🍒 New merge request opened by: ' + user.name
               msg += ' - [' + item.title + '](' + item.url + ')'
+              console.log(msg)
               break
-            case 'merged': // I guess?
+            case 'reopen':
+              msg += '🍒 Merge request is re-opened again by: ' + user.name
+              msg += ' - [' + item.title + '](' + item.url + ')'
+              console.log(msg)
+              break
+            case 'merge':
               msg += '🍒 Merge request is merged successfully'
               msg += ' - [' + item.title + '](' + item.url + ')'
+              console.log(msg)
+              break
+            case 'close':
+              msg += '🍒 Merge request is closed'
+              msg += ' - [' + item.title + '](' + item.url + ')'
+              console.log(msg)
               break
           }
-          console.log(msg)
         }
       }
         break
       case 'pipeline': {
-        console.log('Pipeline: ')
-        console.log(body)
         // Only show failed pipelines
         const item = body.object_attributes
         const user = body.user
@@ -68,9 +85,9 @@ router.post('/', (req, res) => {
               if (body.merge_request != null && !isEmptyObject(body.merge_request)) {
                 msg += '. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
               }
+              console.log(msg)
               break
           }
-          console.log(msg)
         }
       }
         break
@@ -80,10 +97,10 @@ router.post('/', (req, res) => {
           let msg = ''
           switch (body.action) {
             case 'create':
-              msg += '📢🚀🎂 New release is out! Version ' + body.tag + ' - [Download now](' + body.url + ')'
+              msg += '📢🚀🎂 New release is out! LibreWeb Browser version ' + body.tag + ' - [Download now](' + body.url + ')'
+              console.log(msg)
               break
           }
-          console.log(msg)
         }
         break
     }
