@@ -1,10 +1,10 @@
 {
   "name": "gitlab-bot",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "GitLab bot that interconnect GitLab with Telegram",
   "main": "src/index.js",
   "scripts": {
-    "start": "export $(cat tokens.env | xargs) && node .",
+    "start": "node .",
     "lint": "eslint src --ext .js",
     "fix": "eslint src --ext .js --fix"
   },
@@ -30,6 +30,10 @@
     "qs": "^6.10.1"
   },
   "devDependencies": {
-    "eslint": "^7.23.0"
+    "eslint": "^7.23.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1"
   }
 }

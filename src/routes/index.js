@@ -1,14 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const aboutRoute = require('./about')
-const telegramRoute = require('./telegram')
-const gitlabRoute = require('./gitlab')
+const express = require('express')
+const router = express.Router()
 
 router.get('/', (req, res) => {
-    res.json({ message: 'Welcome to the GitLab-Telegram bot' })
+  res.json({ message: 'Welcome to the GitLab-Telegram bot' })
 })
-    .use('/about', aboutRoute)
-    .use('/telegram', telegramRoute)
-    .use('/gitlab', gitlabRoute)
 
-module.exports = router;
+module.exports = router
