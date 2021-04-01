@@ -41,6 +41,10 @@ For testing purpose you could even disable the whole Telegram bot feature, and f
 export TELEGRAM_ENABLED=false
 ```
 
+### Running Production
+
+For production you could also copy `tokens.env.example` to `tokens.env` file. Und use the `start_gitlab_bot.sh` script to start the bot.
+
 ## Adding Webhook
 
 Add your URL as Webhook in your GitLab project, under: `Settings` -> `Webhooks` in the menu.

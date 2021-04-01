@@ -16,7 +16,11 @@
     "bot",
     "telegram",
     "gitlab",
-    "chat"
+    "chat",
+    "issues",
+    "pipeline",
+    "release",
+    "merge requests"
   ],
   "author": {
     "name": "Melroy van den Berg",
