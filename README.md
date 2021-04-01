@@ -9,6 +9,14 @@ This bot will currently on-purpose only handle the following events:
 
 ## Running
 
+Assuming you already install the deps (`npm install`). Currently the bot is as easy as:
+
+```sh
+npm start
+```
+
+## Adding Webhook
+
 Add your URL as Webhook in your GitLab project, under: `Settings` -> `Webhooks` in the menu.
 
 Secret token is not required.
