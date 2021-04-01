@@ -6,6 +6,7 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const botUrl = process.env.URL || 'https://gitlabbot.melroy.org'
 const host = process.env.HOST || 'localhost'
 const port = process.env.PORT || 3013
+const isTelegramEnabled = process.env.TELEGRAM_ENABLED || 'true'
 
 const createError = require('http-errors')
 const crypto = require('crypto')
@@ -16,21 +17,20 @@ const indexRouter = require('./routes/index')
 const telegramRouter = require('./routes/telegram')
 const gitlabRouter = require('./routes/gitlab')
 
-/*
-if (!TELEGRAM_TOKEN) {
-  console.error('\x1b[31mERROR: Provide your Telegram token, by setting the TELEGRAM_TOKEN enviroment variable first! See README.md.\nExit.\x1b[0m')
-  process.exit(1)
-}
-
-const bot = new TelegramBot(TELEGRAM_TOKEN)
-// This informs the Telegram servers of the new webhook.
-bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
-
-*/
 // Create the Express app
 const app = express()
-// Globally available
-// app.set('telegram_bot', bot)
+
+if (isTelegramEnabled === 'true') {
+  if (!TELEGRAM_TOKEN) {
+    console.error('\x1b[31mERROR: Provide your Telegram token, by setting the TELEGRAM_TOKEN enviroment variable first! See README.md.\nExit.\x1b[0m')
+    process.exit(1)
+  }
+  const bot = new TelegramBot(TELEGRAM_TOKEN)
+  // This informs the Telegram servers of the new webhook.
+  bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
+  app.set('telegram_bot', bot)
+}
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
