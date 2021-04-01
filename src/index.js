@@ -25,20 +25,16 @@ if (isTelegramEnabled === 'true') {
     console.error('\x1b[31mERROR: Provide your Telegram token, by setting the TELEGRAM_TOKEN enviroment variable first! See README.md.\nExit.\x1b[0m')
     process.exit(1)
   } else {
-    console.log('Info: Telegram bot will be enabled.')
+    console.log('INFO: Telegram bot will be enabled.')
   }
   const bot = new TelegramBot(TELEGRAM_TOKEN)
   // This informs the Telegram servers of the new webhook.
   bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
   app.set('telegram_bot', bot)
   bot.onText(/\/start/, (msg) => {
-    console.log('Set chat id: ' + msg.chat.id)
+    console.log('INFO: Set chat id: ' + msg.chat.id)
     app.set('chat_id', msg.chat.id)
   })
-
-  /* bot.getChat('@LibreWeb', function (msg) {
-    console.log(msg)
-  }) */
 }
 
 app.use(express.json())
@@ -55,5 +51,5 @@ app.use(function (req, res, next) {
 
 // Start server
 app.listen(port, host, () => {
-  console.log(`GitLab-Telegram Bot service is listening on ${port}`)
+  console.log(`INFO: GitLab-Telegram Bot service is now listening at ${host} on port ${port}`)
 })
