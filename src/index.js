@@ -4,6 +4,7 @@ process.env.NTBA_FIX_350 = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const botUrl = process.env.URL || 'https://gitlabbot.melroy.org'
+const chatId = process.env.TELEGRAM_CHAT_ID || '@libreweb'
 const host = process.env.HOST || 'localhost'
 const port = process.env.PORT || 3013
 const isTelegramEnabled = process.env.TELEGRAM_ENABLED || 'true'
@@ -31,10 +32,7 @@ if (isTelegramEnabled === 'true') {
   // This informs the Telegram servers of the new webhook.
   bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
   app.set('telegram_bot', bot)
-  bot.onText(/\/start/, (msg) => {
-    console.log('INFO: Set chat id: ' + msg.chat.id)
-    app.set('chat_id', msg.chat.id)
-  })
+  app.set('chat_id', chatId)
 }
 
 app.use(express.json())

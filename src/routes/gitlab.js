@@ -108,7 +108,7 @@ router.post('/', (req, res) => {
             case 'create':
               msg += '📢🚀🎂 New release is out! LibreWeb Browser version ' + body.tag + ' - [Download now](' + body.url + ')'
               console.log(msg)
-              bot.sendMessage('@libreweb', msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
               break
           }
         }

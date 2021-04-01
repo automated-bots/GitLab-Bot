@@ -16,6 +16,7 @@ Following environment variables are required, Telegram will require HTTPS conenc
 ```bash
 export URL=https://bot.mydomain.com
 export TELEGRAM_TOKEN=secret
+export TELEGRAM_CHAT_ID=@yourgroup_or_channelname
 ```
 
 Assuming you already install the deps (`npm install`).  
@@ -80,5 +81,5 @@ Assuming you already fulfilled the requirements above.
 
 1. Clone the project: `git clone git@gitlab.melroy.org:melroy/gitlab-bot.git`
 2. Install the NodeJS depedencies via: `npm install`
-3. Provide the Telegram secret via environment variable (set `TELEGRAM_TOKEN`), as well as your public URL environment variable (set `URL`, eg. `https://bot.mydomain.com` when behind a reverse proxy)
+3. Provide the Telegram secret via environment variable (set `TELEGRAM_TOKEN`), the Telegram Chat ID variable (set `TELEGRAM_CHAT_ID`) as well as your public URL environment variable (set `URL`, eg. `https://bot.mydomain.com` when behind a reverse proxy)
 4. To start the bot, by executing: `npm start`
