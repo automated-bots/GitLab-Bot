@@ -21,10 +21,10 @@ Add your URL as Webhook in your GitLab project, under: `Settings` -> `Webhooks` 
 
 Secret token is not required.
 
-Add the public URL towards this GitLab-Telegram bot, be sure to add `/gitlab` to the end of the URL (eg.`https://bot.mydomain.com/gitlab`, when node is installed behind a reverse proxy.  
-Since the route ending with `/gitlab`; is the URL route that nodejs will listen to for GitLab Webhook events.
+Add the public URL towards this GitLab-Telegram bot, be sure to add `/gitlab` to the end of the URL (eg.`https://bot.mydomain.com/gitlab`, when node is installed behind a reverse proxy).  
+Since the route ending with `/gitlab` is mapped to the HTTP GitLab POST Webhook events.
 
-Enable the following triggers or it will not work as expected:
+Enable the following triggers or the bot will not work as expected:
 
 * Issues Events
 * Merge Requests Events
