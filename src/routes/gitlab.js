@@ -105,9 +105,9 @@ router.post('/', (req, res) => {
         break
     }
   }
-  // const bot = app.get('telegram_bot')
-  // const chatId = await bot.getChat('@libreweb');
-  // bot.sendMessage(chatId, "Hello!",  { parse_mode: 'markdown' });
+  // const bot = req.app.get('telegram_bot')
+  // const chatId = bot.getChat('@libreweb')..
+  // bot.sendMessage(chatId, "Hello!",  { parse_mode: 'markdown' })
 })
 
 module.exports = router
