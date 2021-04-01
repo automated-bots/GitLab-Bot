@@ -4,7 +4,8 @@ process.env.NTBA_FIX_350 = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const botUrl = process.env.URL || 'https://gitlabbot.melroy.org'
-const port = process.env.PORT || 3005
+const host = process.env.HOST || 'localhost'
+const port = process.env.PORT || 3013
 
 const createError = require('http-errors')
 const crypto = require('crypto')
@@ -43,6 +44,6 @@ app.use(function (req, res, next) {
 })
 
 // Start server
-app.listen(port, () => {
+app.listen(port, host, () => {
   console.log(`GitLab-Telegram Bot service is listening on ${port}`)
 })
