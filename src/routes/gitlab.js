@@ -7,7 +7,7 @@ function isEmptyObject (obj) {
 }
 
 router.get('/', (req, res) => {
-  res.sendStatus(200).send('Well.. this is not where you should be. /gitlab is for GitLab Webhook calls')
+  res.json({ message: 'Well.. this is not where you should be. /gitlab is for GitLab Webhook calls' })
 })
 
 // Handle GitLab web hook POST calls
