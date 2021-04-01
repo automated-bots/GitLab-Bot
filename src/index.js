@@ -6,7 +6,7 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const botUrl = 'https://gitlabbot.melroy.org'
 const port = process.env.PORT || 3005
 
-const createError = require('http-errors');
+const createError = require('http-errors')
 const crypto = require('crypto')
 global.TelegramSecretHash = crypto.randomBytes(20).toString('hex')
 const TelegramBot = require('node-telegram-bot-api')
@@ -25,23 +25,22 @@ const bot = new TelegramBot(TELEGRAM_TOKEN)
 // This informs the Telegram servers of the new webhook.
 bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
 
-
 */
 // Create the Express app
 const app = express()
 // Globally available
 // app.set('telegram_bot', bot)
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }))
 
-app.use('/', indexRouter);
-app.use('/telegram', telegramRouter);
-app.use('/gitlab', gitlabRouter);
+app.use('/', indexRouter)
+app.use('/telegram', telegramRouter)
+app.use('/gitlab', gitlabRouter)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+app.use(function (req, res, next) {
+  next(createError(404))
+})
 
 // Start server
 app.listen(port, () => {
