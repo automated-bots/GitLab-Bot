@@ -76,21 +76,14 @@ router.post('/', (req, res) => {
         break
       case 'release':
         {
-          console.log('Release: ')
-          console.log(body)
           // Only show new releases!
-          const item = body.object_attributes
-          const user = body.user
-          if (Object.prototype.hasOwnProperty.call(item, 'action')) { // I hope?
-            let msg = ''
-            switch (item.action) {
-              case 'open':
-                msg += '📢🚀🎂 New merge request opened by: ' + user.name
-                msg += ' - [' + item.title + '](' + item.url + ')'
-                break
-            }
-            console.log(msg)
+          let msg = ''
+          switch (body.action) {
+            case 'create':
+              msg += '📢🚀🎂 New release is out! Version ' + body.tag + ' - [Download now](' + body.url + ')'
+              break
           }
+          console.log(msg)
         }
         break
     }
