@@ -9,7 +9,7 @@ This bot will currently on-purpose only handle the following events:
 
 ## Running
 
-Assuming you already install the deps (`npm install`). Currently the bot is as easy as:
+Assuming you already install the deps (`npm install`). Currently starting the bot is as easy as:
 
 ```sh
 npm start
