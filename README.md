@@ -46,7 +46,9 @@ sudo apt-get install -y nodejs
 
 ### Getting started
 
-1. Clone the git project;
+Assuming you already fulfilled the requirements above.
+
+1. Clone the project: `git clone git@gitlab.melroy.org:melroy/gitlab-bot.git`;
 2. Install the NodeJS depedencies via: `npm install`;
 3. Provide the telegram secret via environment variable (set `TELEGRAM_TOKEN`), as well as your public URL environment variable (set `URL`, eg. `https://bot.mydomain.com` when behind a reverse proxy);
 4. To start the bot, by executing: `npm start`.
