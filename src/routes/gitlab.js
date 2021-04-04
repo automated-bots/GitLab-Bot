@@ -87,7 +87,7 @@ router.post('/', (req, res) => {
           let msg = ''
           switch (item.status) {
             case 'failed': // failed or success?
-              msg += '❌ Pipeline [#' + item.id + '](https://gitlab.melroy.org/libreweb/browser/-/pipelines/' + item.id + ') failed! '
+              msg += '❌ Pipeline [#' + item.id + '](https://gitlab.melroy.org/libreweb/browser/-/pipelines/' + item.id + ') on ' + item.ref + ' failed! '
               msg += 'From user: ' + user.name
               msg += ', with commit: ' + commit.title
               if (body.merge_request != null && !isEmptyObject(body.merge_request)) {
