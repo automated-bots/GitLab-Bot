@@ -1,0 +1,12 @@
+.env
+
+node_modules/
+scripts/
+images/
+
+.git/
+.vscode/
+.gitlab-ci.yml
+nginx_example.conf
+docker-compose.yml
+start_gitlab_bot.sh

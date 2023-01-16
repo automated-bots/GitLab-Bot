@@ -1,3 +1,4 @@
+require('dotenv').config()
 // NTBA = node-telegram-bot-api fixes
 process.env.NTBA_FIX_319 = 1
 process.env.NTBA_FIX_350 = 1
@@ -14,12 +15,13 @@ const crypto = require('crypto')
 global.TelegramSecretHash = crypto.randomBytes(20).toString('hex')
 const TelegramBot = require('node-telegram-bot-api')
 const express = require('express')
-const indexRouter = require('./routes/index')
-const telegramRouter = require('./routes/telegram')
-const gitlabRouter = require('./routes/gitlab')
+const routes = require('./routes')
+global.ErrorState = false
 
 // Create the Express app
 const app = express()
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 if (isTelegramEnabled === 'true') {
   if (!TELEGRAM_TOKEN) {
@@ -29,18 +31,20 @@ if (isTelegramEnabled === 'true') {
     console.log('INFO: Telegram bot will be enabled.')
   }
   const bot = new TelegramBot(TELEGRAM_TOKEN)
+  bot.on('error', (error) => {
+    console.error(error)
+    global.ErrorState = true
+  })
   // This informs the Telegram servers of the new webhook.
-  bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`)
+  bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`).catch((error) => {
+    console.error(error)
+    global.ErrorState = true
+  })
   app.set('telegram_bot', bot)
   app.set('chat_id', chatId)
 }
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-
-app.use('/', indexRouter)
-app.use('/telegram', telegramRouter)
-app.use('/gitlab', gitlabRouter)
+app.use('/', routes)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -49,5 +53,5 @@ app.use(function (req, res, next) {
 
 // Start server
 app.listen(port, host, () => {
-  console.log(`INFO: GitLab-Telegram Bot service is now listening at ${host} on port ${port}`)
+  console.log(`INFO: GitLab-Telegram Bot service is now listening at http://${host}:${port}`)
 })

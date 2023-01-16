@@ -29,6 +29,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@gitbeaker/node": "^28.2.0",
+    "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "node-telegram-bot-api": "^0.52.0",
     "qs": "^6.10.1"

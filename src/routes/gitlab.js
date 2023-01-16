@@ -25,19 +25,28 @@ router.post('/', (req, res) => {
               msg += '🐞 New issue created by: ' + user.name
               msg += ' - [' + item.title + '](' + item.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
             case 'reopen':
               msg += '🐞 Issue re-opened by: ' + user.name
               msg += ' - [' + item.title + '](' + item.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
             case 'close':
               msg += '🐞 Issue closed by: ' + user.name
               msg += ' - [' + item.title + '](' + item.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
           }
         }
@@ -54,25 +63,37 @@ router.post('/', (req, res) => {
               msg += '🍒 New merge request opened by: ' + user.name
               msg += ' - [' + item.title + '](' + item.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
             case 'reopen':
               msg += '🍒 Merge request is re-opened again by: ' + user.name
               msg += ' - [' + item.title + '](' + item.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
             case 'merge':
               msg += '🍒 Merge request is merged successfully'
               msg += ' - [' + item.title + '](' + item.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
             case 'close':
               msg += '🍒 Merge request is closed'
               msg += ' - [' + item.title + '](' + item.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
           }
         }
@@ -94,7 +115,10 @@ router.post('/', (req, res) => {
                 msg += '. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
               }
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
           }
         }
@@ -108,7 +132,10 @@ router.post('/', (req, res) => {
             case 'create':
               msg += '📢🚀🎂 New release is out! LibreWeb Browser version ' + body.tag + ' - [Download now](' + body.url + ')'
               console.log(msg)
-              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true })
+              bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
+                console.error(error)
+                global.ErrorState = true
+              })
               break
           }
         }

@@ -1,5 +1,5 @@
-# Secret tokens
-tokens.env
+# Dot file
+.env
 
 # Logs
 logs
