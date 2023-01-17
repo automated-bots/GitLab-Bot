@@ -6,7 +6,6 @@ process.env.NTBA_FIX_350 = 1
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const botUrl = process.env.URL || 'https://gitlabbot.melroy.org'
 const chatId = process.env.TELEGRAM_CHAT_ID || '@libreweb'
-const host = process.env.HOST || 'localhost'
 const port = process.env.PORT || 3013
 const isTelegramEnabled = process.env.TELEGRAM_ENABLED || 'true'
 
@@ -52,6 +51,6 @@ app.use(function (req, res, next) {
 })
 
 // Start server
-app.listen(port, host, () => {
-  console.log(`INFO: GitLab-Telegram Bot service is now listening at http://${host}:${port}`)
+app.listen(port, () => {
+  console.log(`INFO: GitLab-Telegram Bot service is now listening at http://localhost:${port}`)
 })

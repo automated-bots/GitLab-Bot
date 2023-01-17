@@ -25,11 +25,9 @@ And adapt the `.env` file. Then start the bot, using:
 npm start
 ```
 
-The bot will listen on `localhost` on port `3013` by default. You can create a reverse proxy to map `localhost:3013` to a public URL via Nginx for example. Which also allows you to add HTTPS (TLS) on top of the connection.
-
 You can also change the port, by setting the `PORT` environment variable.
 
-Again, by default the bot will _ONLY_ listen on `localhost:3013`. It's adviced to run the bot behind a reverse proxy.
+It's adviced to run the bot behind a reverse proxy (eg. Nginx).
 
 ### Testing
 
@@ -85,7 +83,7 @@ Assuming you already fulfilled the requirements above.
 
 1. Clone the project: `git clone git@gitlab.melroy.org:melroy/gitlab-bot.git`
 2. Install the NodeJS depedencies via: `npm install`
-3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `HOST`, `TELEGRAM_TOKEN` and `TELEGRAM_CHAT_ID` environment variables.
+3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `URL`, `TELEGRAM_TOKEN` and `TELEGRAM_CHAT_ID` environment variables.
 4. To start the bot by executing: `npm start`
 
 Hint: You can also disable the Telegram integration during testing, set: `TELEGRAM_ENABLED=false` in the `.env` file.

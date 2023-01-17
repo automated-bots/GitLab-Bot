@@ -9,7 +9,7 @@ services:
     volumes:
       - /home/username/folder/to/.env:/app/.env:ro
     ports:
-      - "3013:3013"
+      - "127.0.0.1:3013:3013"
 
 networks:
   gitlab_bot_external_network:
