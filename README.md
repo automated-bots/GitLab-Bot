@@ -1,6 +1,6 @@
 # GitLab-Telegram Bot
 
-This bot will currently on-purpose only handle the following events:
+This bot will handle the following events and inform you via Telegram about those events:
 
 - Issues opened, re-opened & closed;
 - Merge requests are opened, re-opened, closed or merged;
