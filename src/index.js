@@ -45,9 +45,19 @@ if (isTelegramEnabled === 'true') {
 
 app.use('/', routes)
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
+// Catch 404 and forward to error handler
+app.use((req, res, next) => {
   next(createError(404))
+})
+
+// Error handler
+app.use((error, req, res, next) => {
+  // Only print errors in development
+  if (req.app.get('env') === 'development') {
+    console.error(error)
+  }
+  // Render the error page
+  res.status(error.status || 500).json()
 })
 
 // Start server
