@@ -13,7 +13,7 @@ We will first explain how to use this setup in production. See below for running
 
 ### Setup
 
-You now need to set several environment variables, you can use the `.env` file.
+You need to set some settings using environment variables, for that we use the `.env` file. You can use the `.env.example` file as template.
 
 ```sh
 cp .env.example .env
@@ -21,14 +21,10 @@ cp .env.example .env
 
 Adapt the `.env` file to your settings.
 
-```sh
-npm start
-```
-
 In production we use Docker, see [docker-compose.yml](docker-compose.yml) file to start the Docker container leveraging Docker Compose. It's advised to run the bot behind a reverse proxy (eg. Nginx).
 
 Start the container using: `docker compose up` or start in the background using: `docker compose up -d`.  
-_Note:_ If you instaled Docker Compose manually, the script name is `docker-compose` instead of `docker compose`.
+_Note:_ If you installed Docker Compose manually, the script name is `docker-compose` instead of `docker compose`.
 
 ### Testing
 
@@ -74,7 +70,7 @@ sudo apt-get install -y nodejs
 Assuming you already fulfilled the requirements above.
 
 1. Clone the project: `git clone git@gitlab.melroy.org:melroy/gitlab-bot.git`
-2. Install the NodeJS depedencies via: `npm install`
+2. Install the NodeJS dependencies via: `npm install`
 3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `URL`, `TELEGRAM_TOKEN` and `TELEGRAM_CHAT_ID` environment variables.
 4. To start the bot by executing: `npm start`
 
