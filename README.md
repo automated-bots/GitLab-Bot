@@ -9,9 +9,9 @@ This bot will handle the following events and inform you via Telegram about thos
 
 ## Production
 
-### Starting
+We will first explain how to use this setup in production. See below for running a development setup.
 
-Install the JavaScript dependencies: `npm install`.
+### Setup
 
 You now need to set several environment variables, you can use the `.env` file.
 
@@ -19,15 +19,16 @@ You now need to set several environment variables, you can use the `.env` file.
 cp .env.example .env
 ```
 
-And adapt the `.env` file. Then start the bot, using:
+Adapt the `.env` file to your settings.
 
 ```sh
 npm start
 ```
 
-You can also change the port, by setting the `PORT` environment variable.
+In production we use Docker, see [docker-compose.yml](docker-compose.yml) file to start the Docker container leveraging Docker Compose. It's advised to run the bot behind a reverse proxy (eg. Nginx).
 
-It's adviced to run the bot behind a reverse proxy (eg. Nginx).
+Start the container using: `docker compose up` or start in the background using: `docker compose up -d`.  
+_Note:_ If you instaled Docker Compose manually, the script name is `docker-compose` instead of `docker compose`.
 
 ### Testing
 
@@ -39,18 +40,9 @@ For testing purpose you could even disable the whole Telegram bot feature, and f
 export TELEGRAM_ENABLED=false
 ```
 
-### Running Production
-
-For production you could also copy `.env.example` to `.env` file.
-
-In production we use Docker, see [docker-compose.yml](docker-compose.yml) file to start the Docker container leveraging Docker Compose.
-
-Start the container using: `docker compose up` or start in the background using: `docker compose up -d`.
-_Note:_ If you instaled Docker Compose manually, the script name is `docker-compose` instead of `docker compose`.
-
 ## Adding Webhook
 
-Add your URL as Webhook in your GitLab project, under: `Settings` -> `Webhooks` in the menu.
+Add your URL as Webhook in your GitLab project, in your GitLab repository go to: `Settings` -> `Webhooks` in the menu.
 
 Secret token is not required.
 
