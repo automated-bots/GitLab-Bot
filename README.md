@@ -2,10 +2,11 @@
 
 This bot will handle the following events and inform you via Telegram about those events:
 
-- Issues opened, re-opened & closed;
-- Merge requests are opened, re-opened, closed or merged;
-- Failing pipelines;
-- New releases.
+- Issues opened, re-opened & closed
+- Merge requests are opened, re-opened, closed or merged
+- Failing pipelines
+- Successful deployments
+- New releases
 
 ## Production
 
@@ -51,6 +52,7 @@ Enable the following triggers or the bot will not work as expected:
 - Issues Events
 - Merge Requests Events
 - Pipeline Events
+- Deployment Events
 - Releases Events
 
 Also notice you could _unselect_ the Push events (which is enabled by default).
@@ -77,4 +79,4 @@ Assuming you already fulfilled the requirements above.
 
 The `GITLAB_TELEGRAM_CHAT_MAPPING` environment variable is a JSON object (with key/value pairs). The key is the GitLab project ID (eg. `42`) and the value is the corresponding Telegram chat ID (`@telegramgroup`). You can have multiple key/value pairs in a single object to serve multiple projects and telegram channels/groups.
 
-_Hint:_ You can also disable the Telegram integration during testing, set: `TELEGRAM_ENABLED=false` in the `.env` file.
+_Hint:_ You can also disable the Telegram integration and use a fake Telegram bot. To use the fake bot set: `TELEGRAM_ENABLED=false` in the `.env` file.

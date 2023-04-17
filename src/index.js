@@ -61,6 +61,21 @@ if (isTelegramEnabled === 'true') {
     console.error(e)
     process.exit(1)
   }
+} else {
+  // In debug mode, create our own fake bot
+  const bot = {}
+  bot.setWebHook = (url, options = {}, fileOptions = {}) => { }
+  bot.onText = (regexp, callback) => {}
+  bot.sendMessage = (chatId, text, form = {}) => {
+    return new Promise(function (resolve, reject) {
+      console.log(new Date().toDateString() + ' - Send messaged (just a drill)! Chat ID: ' + chatId + ' with message: ' + text)
+      resolve()
+    })
+  }
+  app.set('telegram_bot', bot)
+
+  const parsedMapping = JSON.parse(gitlabTelegramMapping)
+  app.set('gitlab_telegram_mapping', parsedMapping)
 }
 
 app.use('/', routes)

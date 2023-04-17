@@ -19,7 +19,7 @@ router.post('/', (req, res) => {
     if (Object.prototype.hasOwnProperty.call(body, 'project')) {
       const projectId = parseInt(body.project.id)
       if (projectId in gitlabTelegramMapping) {
-      // Retrieve Telegram chat ID (@...) from the GitLab/Telegram mapping config
+        // Retrieve Telegram chat ID (@...) from the GitLab/Telegram mapping config
         const chatId = gitlabTelegramMapping[projectId]
 
         if (Object.prototype.hasOwnProperty.call(body, 'object_kind')) {
@@ -171,10 +171,10 @@ router.post('/', (req, res) => {
           }
         }
       } else {
-        console.error('Error: Could not find project ID in the GitLab/Telegram mapping config. Skipping event: ' + JSON.stringify(body))
+        console.error('Error: Could not find project ID in the GitLab/Telegram mapping config. Skipping event. Body: ' + JSON.stringify(body))
       }
     } else {
-      console.error('Error: Could not find project ID for Webhook event. Skipping event: ' + JSON.stringify(body))
+      console.error('Error: Could not find project (project ID) for Webhook event. Skipping event. Body: ' + JSON.stringify(body))
     }
   } else {
     console.log('WARN: GitLab Secret Token mismatch!')
