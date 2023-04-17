@@ -31,7 +31,7 @@ _Note:_ If you installed Docker Compose manually, the script name is `docker-com
 
 Some test events will not listen to the triggers (since it will not contain the right trigger information). But the `Releases events` should work from the Test drop-down menu (last option).
 
-For testing purpose you could even disable the whole Telegram bot feature, and first test your GitLab Webhooks, by disabling the Telegram part. Set the `TELEGRAM_ENABLED` environment variable to false:
+For testing purpose you could disable the Telegram integration and use a _fake_ telegram bot. To use the fake bot set the `TELEGRAM_ENABLED` environment variable to `false`:
 
 ```bash
 export TELEGRAM_ENABLED=false
