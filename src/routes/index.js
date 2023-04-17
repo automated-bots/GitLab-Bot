@@ -4,7 +4,7 @@ const telegramRoute = require('./telegram')
 const gitlabRoute = require('./gitlab')
 
 router.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the GitLab-Telegram bot' })
+  res.json({ message: 'Welcome to the GitLab Webhooks to Telegram bot' })
 })
   .use('/gitlab', gitlabRoute)
   .use('/telegram', telegramRoute)

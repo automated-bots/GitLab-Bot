@@ -40,7 +40,8 @@ export TELEGRAM_ENABLED=false
 
 Add your URL as Webhook in your GitLab project, in your GitLab repository go to: `Settings` -> `Webhooks` in the menu.
 
-Secret token is not required.
+GitLab Secret token is also required!  
+You need to store the same GitLab secret token in your `.env` file using the variable name `GITLAB_SECRET_TOKEN`.
 
 Add the public URL towards this GitLab-Telegram bot, be sure to add `/gitlab` to the end of the URL (eg.`https://bot.mydomain.com/gitlab`, when bot is running behind a reverse proxy).  
 Since the route ending with `/gitlab` is mapped to the HTTP GitLab POST Webhook events.
@@ -58,10 +59,10 @@ Also notice you could _unselect_ the Push events (which is enabled by default).
 
 ### Requirements
 
-- [Node.js v16](https://nodejs.org/en/download/) with `npm`
+- [Node.js LTS](https://nodejs.org/en/download/) with `npm`
 
 ```sh
-curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
@@ -71,7 +72,9 @@ Assuming you already fulfilled the requirements above.
 
 1. Clone the project: `git clone git@gitlab.melroy.org:melroy/gitlab-bot.git`
 2. Install the NodeJS dependencies via: `npm install`
-3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `URL`, `TELEGRAM_TOKEN` and `TELEGRAM_CHAT_ID` environment variables.
+3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `URL`, `TELEGRAM_TOKEN`, `GITLAB_SECRET_TOKEN` and `GITLAB_TELEGRAM_CHAT_MAPPING` environment variables.
 4. To start the bot by executing: `npm start`
 
-Hint: You can also disable the Telegram integration during testing, set: `TELEGRAM_ENABLED=false` in the `.env` file.
+The `GITLAB_TELEGRAM_CHAT_MAPPING` environment variable is a JSON object (with key/value pairs). The key is the GitLab project ID (eg. `42`) and the value is the corresponding Telegram chat ID (`@telegramgroup`). You can have multiple key/value pairs in a single object to serve multiple projects and telegram channels/groups.
+
+_Hint:_ You can also disable the Telegram integration during testing, set: `TELEGRAM_ENABLED=false` in the `.env` file.
