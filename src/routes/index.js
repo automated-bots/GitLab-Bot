@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 router.get('/health', (req, res) => {
   const errorCode = (global.ErrorState) ? 500 : 200
   const result = (global.ErrorState) ? 'NOK' : 'OK'
-  res.status(errorCode).json({ result: result })
+  res.status(errorCode).json({ result })
 })
 
 module.exports = router

@@ -2,6 +2,28 @@ const secretToken = process.env.GITLAB_SECRET_TOKEN
 const express = require('express')
 const router = express.Router()
 
+/**
+ * Helper function to send the message to Telegram chat
+ * @param {Object} bot Telegram bot class object
+ * @param {Number} chatId Telegram chat ID
+ * @param {String} message Message string
+ * @param {Object} options Telegram chat options (optional)
+ */
+function sendMessage (bot, chatId, message, options = { parse_mode: 'MarkdownV2', disable_web_page_preview: true }) {
+  bot.sendMessage(chatId, message, options).catch((error) => {
+    console.log(`WARN: Message attempted to send (to chatID: ${chatId}): ${message}`)
+    console.error('Error:\n')
+    console.error(error)
+    // Set to error state
+    global.ErrorState = true
+  })
+}
+
+/**
+ * Simple check if the object is empty, returns false if empty otherwise true
+ * @param {Object} obj Object
+ * @returns boolean (true/false)
+ */
 function isEmptyObject (obj) {
   return !Object.keys(obj).length
 }
@@ -33,27 +55,18 @@ router.post('/', (req, res) => {
                 switch (item.action) {
                   case 'open':
                     msg += '🐞 New issue created by: ' + user.name
-                    msg += ' - [' + item.title + '](' + item.url + ')'
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    msg += ' \\- [' + item.title + '](' + item.url + ')'
+                    sendMessage(bot, chatId, msg)
                     break
                   case 'reopen':
                     msg += '🐞 Issue re-opened by: ' + user.name
-                    msg += ' - [' + item.title + '](' + item.url + ')'
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    msg += ' \\- [' + item.title + '](' + item.url + ')'
+                    sendMessage(bot, chatId, msg)
                     break
                   case 'close':
                     msg += '🐞 Issue closed by: ' + user.name
-                    msg += ' - [' + item.title + '](' + item.url + ')'
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    msg += ' \\- [' + item.title + '](' + item.url + ')'
+                    sendMessage(bot, chatId, msg)
                     break
                 }
               }
@@ -64,39 +77,28 @@ router.post('/', (req, res) => {
               const item = body.object_attributes
               const user = body.user
               if (Object.prototype.hasOwnProperty.call(item, 'action')) { // I hope?
+                const title = (item.title).replace('.', '\\.').replace('-', '\\-').replace('!', '\\!').replace('+', '\\+').replace('#', '\\#').replace('*', '\\*').replace('_', '\\_').replace('(', '\\(').replace(')', '\\)')
                 let msg = ''
                 switch (item.action) {
                   case 'open':
                     msg += '🍒 New merge request opened by: ' + user.name
-                    msg += ' - [' + item.title + '](' + item.url + ')'
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    msg += ' \\- [' + title + '](' + item.url + ')'
+                    sendMessage(bot, chatId, msg)
                     break
                   case 'reopen':
                     msg += '🍒 Merge request is re-opened again by: ' + user.name
-                    msg += ' - [' + item.title + '](' + item.url + ')'
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    msg += ' \\- [' + title + '](' + item.url + ')'
+                    sendMessage(bot, chatId, msg)
                     break
                   case 'merge':
                     msg += '🍒 Merge request is merged successfully'
-                    msg += ' - [' + item.title + '](' + item.url + ')'
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    msg += ' \\- [' + title + '](' + item.url + ')'
+                    sendMessage(bot, chatId, msg)
                     break
                   case 'close':
                     msg += '🍒 Merge request is closed'
-                    msg += ' - [' + item.title + '](' + item.url + ')'
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    msg += ' \\- [' + title + '](' + item.url + ')'
+                    sendMessage(bot, chatId, msg)
                     break
                 }
               }
@@ -111,16 +113,13 @@ router.post('/', (req, res) => {
                 let msg = ''
                 switch (item.status) {
                   case 'failed': // failed or success?
-                    msg += '❌ Pipeline [#' + item.id + '](' + item.url + ') on ' + item.ref + ' failed! '
+                    msg += '❌ Pipeline [\\#' + item.id + '](' + item.url + ') on ' + item.ref + ' failed\\! '
                     msg += 'From user: ' + user.name
                     msg += ', with commit: ' + commit.title
                     if (body.merge_request != null && !isEmptyObject(body.merge_request)) {
-                      msg += '. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
+                      msg += '\\. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
                     }
-                    bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                      console.error(error)
-                      global.ErrorState = true
-                    })
+                    sendMessage(bot, chatId, msg)
                     break
                 }
               }
@@ -133,11 +132,8 @@ router.post('/', (req, res) => {
                 if (status) {
                   switch (status) {
                     case 'success': {
-                      const msg = '🚀📦 Deployment job is successful! Deployed to ' + body.environment + ' at: [' + body.environment_external_url + '](' + body.environment_external_url + ')'
-                      bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                        console.error(error)
-                        global.ErrorState = true
-                      })
+                      const msg = '🚀📦 Deployment job is successful\\! Deployed to ' + body.environment + ' at: [' + body.environment_external_url + '](' + body.environment_external_url + ')'
+                      sendMessage(bot, chatId, msg)
                       break
                     }
                   }
@@ -151,15 +147,12 @@ router.post('/', (req, res) => {
               // Only show new releases (= 'create' action)!
                 const action = body.action
                 const projectName = body.project.name
-                const tag = body.tag
+                const tag = (body.tag).replace('.', '\\.')
                 if (action && projectName && tag) {
                   switch (action) {
                     case 'create': {
-                      const msg = '📢🚀🎂 New release is out! ' + projectName + ' version ' + tag + ' - [Download now](' + body.url + ')'
-                      bot.sendMessage(chatId, msg, { parse_mode: 'markdown', disable_web_page_preview: true }).catch((error) => {
-                        console.error(error)
-                        global.ErrorState = true
-                      })
+                      const msg = '📢🚀🎂 New release is out\\! ' + projectName + ' version ' + tag + ' - [Download now](' + body.url + ')'
+                      sendMessage(bot, chatId, msg)
                       break
                     }
                   }
