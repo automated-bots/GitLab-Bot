@@ -19,6 +19,18 @@ function sendMessage (bot, chatId, message, options = { parse_mode: 'MarkdownV2'
 }
 
 /**
+ * Backslash all characters according to Telegram Markdown v2 specification
+ * @param {String} input Any input string
+ * @returns output in valid Telegram Markdownv2 format
+ */
+function convertValidMarkdownv2Format (input) {
+  return input.replaceAll('.', '\\.').replaceAll('-', '\\-').replaceAll('!', '\\!').replaceAll('+', '\\+').replaceAll('#', '\\#').replaceAll('*', '\\*')
+    .replaceAll('_', '\\_').replaceAll('(', '\\(').replaceAll(')', '\\)').replaceAll('~', '\\~').replaceAll('`', '\\~')
+    .replaceAll('|', '\\|').replaceAll('[', '\\[').replaceAll(']', '\\]').replaceAll('<', '\\<').replaceAll('>', '\\>')
+    .replaceAll('=', '\\=').replaceAll('{', '\\{').replaceAll('}', '\\}').replaceAll('=', '\\=').replaceAll('=', '\\=')
+}
+
+/**
  * Simple check if the object is empty, returns false if empty otherwise true
  * @param {Object} obj Object
  * @returns boolean (true/false)
@@ -51,20 +63,22 @@ router.post('/', (req, res) => {
               const user = body.user
               if (Object.prototype.hasOwnProperty.call(item, 'action')) {
                 let msg = ''
+                const name = convertValidMarkdownv2Format(user.name)
+                const title = convertValidMarkdownv2Format(item.title)
                 switch (item.action) {
                   case 'open':
-                    msg += '🐞 New issue created by: ' + user.name
-                    msg += ' \\- [' + item.title + '](' + item.url + ')'
+                    msg += '🐞 New issue created by: ' + name
+                    msg += ' \\- [' + title + '](' + item.url + ')'
                     sendMessage(bot, chatId, msg)
                     break
                   case 'reopen':
-                    msg += '🐞 Issue re-opened by: ' + user.name
-                    msg += ' \\- [' + item.title + '](' + item.url + ')'
+                    msg += '🐞 Issue re-opened by: ' + name
+                    msg += ' \\- [' + title + '](' + item.url + ')'
                     sendMessage(bot, chatId, msg)
                     break
                   case 'close':
-                    msg += '🐞 Issue closed by: ' + user.name
-                    msg += ' \\- [' + item.title + '](' + item.url + ')'
+                    msg += '🐞 Issue closed by: ' + name
+                    msg += ' \\- [' + title + '](' + item.url + ')'
                     sendMessage(bot, chatId, msg)
                     break
                 }
@@ -76,19 +90,17 @@ router.post('/', (req, res) => {
               const item = body.object_attributes
               const user = body.user
               if (Object.prototype.hasOwnProperty.call(item, 'action')) { // I hope?
-                const title = (item.title).replaceAll('.', '\\.').replaceAll('-', '\\-').replaceAll('!', '\\!').replaceAll('+', '\\+').replaceAll('#', '\\#').replaceAll('*', '\\*')
-                  .replaceAll('_', '\\_').replaceAll('(', '\\(').replaceAll(')', '\\)').replaceAll('~', '\\~').replaceAll('`', '\\~')
-                  .replaceAll('|', '\\|').replaceAll('[', '\\[').replaceAll(']', '\\]').replaceAll('<', '\\<').replaceAll('>', '\\>')
-                  .replaceAll('=', '\\=').replaceAll('{', '\\{').replaceAll('}', '\\}').replaceAll('=', '\\=').replaceAll('=', '\\=')
+                const name = convertValidMarkdownv2Format(user.name)
+                const title = convertValidMarkdownv2Format(item.title)
                 let msg = ''
                 switch (item.action) {
                   case 'open':
-                    msg += '🍒 New merge request opened by: ' + user.name
+                    msg += '🍒 New merge request opened by: ' + name
                     msg += ' \\- [' + title + '](' + item.url + ')'
                     sendMessage(bot, chatId, msg)
                     break
                   case 'reopen':
-                    msg += '🍒 Merge request is re-opened again by: ' + user.name
+                    msg += '🍒 Merge request is re-opened again by: ' + name
                     msg += ' \\- [' + title + '](' + item.url + ')'
                     sendMessage(bot, chatId, msg)
                     break
@@ -113,11 +125,14 @@ router.post('/', (req, res) => {
               const commit = body.commit
               if (Object.prototype.hasOwnProperty.call(item, 'status')) {
                 let msg = ''
+                const ref = convertValidMarkdownv2Format(item.ref)
+                const name = convertValidMarkdownv2Format(user.name)
+                const title = convertValidMarkdownv2Format(commit.title)
                 switch (item.status) {
                   case 'failed': // failed or success?
-                    msg += '❌ Pipeline [\\#' + item.id + '](' + item.url + ') on ' + item.ref + ' failed\\! '
-                    msg += 'From user: ' + user.name
-                    msg += ', with commit: ' + commit.title
+                    msg += '❌ Pipeline [\\#' + item.id + '](' + item.url + ') on ' + ref + ' failed\\! '
+                    msg += 'From user: ' + name
+                    msg += ', with commit: ' + title
                     if (body.merge_request != null && !isEmptyObject(body.merge_request)) {
                       msg += '\\. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
                     }
@@ -149,7 +164,7 @@ router.post('/', (req, res) => {
               // Only show new releases (= 'create' action)!
                 const action = body.action
                 const projectName = body.project.name
-                const tag = (body.tag).replaceAll('.', '\\.').replaceAll('-', '\\-').replaceAll('_', '\\_')
+                const tag = convertValidMarkdownv2Format(body.tag)
                 if (action && projectName && tag) {
                   switch (action) {
                     case 'create': {
