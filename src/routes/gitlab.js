@@ -76,7 +76,10 @@ router.post('/', (req, res) => {
               const item = body.object_attributes
               const user = body.user
               if (Object.prototype.hasOwnProperty.call(item, 'action')) { // I hope?
-                const title = (item.title).replace('.', '\\.').replace('-', '\\-').replace('!', '\\!').replace('+', '\\+').replace('#', '\\#').replace('*', '\\*').replace('_', '\\_').replace('(', '\\(').replace(')', '\\)')
+                const title = (item.title).replaceAll('.', '\\.').replaceAll('-', '\\-').replaceAll('!', '\\!').replaceAll('+', '\\+').replaceAll('#', '\\#').replaceAll('*', '\\*')
+                  .replaceAll('_', '\\_').replaceAll('(', '\\(').replaceAll(')', '\\)').replaceAll('~', '\\~').replaceAll('`', '\\~')
+                  .replaceAll('|', '\\|').replaceAll('[', '\\[').replaceAll(']', '\\]').replaceAll('<', '\\<').replaceAll('>', '\\>')
+                  .replaceAll('=', '\\=').replaceAll('{', '\\{').replaceAll('}', '\\}').replaceAll('=', '\\=').replaceAll('=', '\\=')
                 let msg = ''
                 switch (item.action) {
                   case 'open':
@@ -146,7 +149,7 @@ router.post('/', (req, res) => {
               // Only show new releases (= 'create' action)!
                 const action = body.action
                 const projectName = body.project.name
-                const tag = (body.tag).replace('.', '\\.')
+                const tag = (body.tag).replaceAll('.', '\\.').replaceAll('-', '\\-').replaceAll('_', '\\_')
                 if (action && projectName && tag) {
                   switch (action) {
                     case 'create': {
