@@ -163,12 +163,12 @@ router.post('/', (req, res) => {
               {
               // Only show new releases (= 'create' action)!
                 const action = body.action
-                const projectName = body.project.name
+                const projectName = convertValidMarkdownv2Format(body.project.name)
                 const tag = convertValidMarkdownv2Format(body.tag)
                 if (action && projectName && tag) {
                   switch (action) {
                     case 'create': {
-                      const msg = '📢🚀🎂 New release is out\\! ' + projectName + ' version ' + tag + ' - [Download now](' + body.url + ')'
+                      const msg = '📢🚀🎂 New release is out\\! ' + projectName + ' version ' + tag + ' \\- [Download now](' + body.url + ')'
                       sendMessage(bot, chatId, msg)
                       break
                     }
