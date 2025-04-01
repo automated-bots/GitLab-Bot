@@ -61,7 +61,8 @@ Also notice you could _unselect_ the Push events (which is enabled by default).
 
 ### Requirements
 
-- [Node.js LTS](https://nodejs.org/en/download/) with `npm`
+- [Node.js LTS](https://nodejs.org/en/download/)
+- pnpm
 
 ```sh
 curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
@@ -73,9 +74,9 @@ sudo apt-get install -y nodejs
 Assuming you already fulfilled the requirements above.
 
 1. Clone the project: `git clone git@gitlab.melroy.org:melroy/gitlab-bot.git`
-2. Install the NodeJS dependencies via: `npm install`
+2. Install the NodeJS dependencies via: `pnpm install`
 3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `URL`, `TELEGRAM_TOKEN`, `GITLAB_SECRET_TOKEN` and `GITLAB_TELEGRAM_CHAT_MAPPING` environment variables.
-4. To start the bot by executing: `npm start`
+4. To start the bot by executing: `pnpm start`
 
 The `GITLAB_TELEGRAM_CHAT_MAPPING` environment variable is a JSON object (with key/value pairs). The key is the GitLab project ID (eg. `42`) and the value is the corresponding Telegram chat ID (`@telegramgroup`). You can have multiple key/value pairs in a single object to serve multiple projects and telegram channels/groups.
 

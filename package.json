@@ -1,6 +1,6 @@
 {
   "name": "gitlab-bot",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "GitLab bot that interconnect GitLab with Telegram",
   "main": "src/index.js",
   "scripts": {
@@ -28,14 +28,15 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "node-telegram-bot-api": "^0.64.0"
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-n": "^16.4.0",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint": "^9.23.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.17.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "neostandard": "^0.12.1"
   }
 }

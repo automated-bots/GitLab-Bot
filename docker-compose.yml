@@ -1,7 +1,7 @@
 version: "3"
 services:
   gitlab-bot:
-    image: danger89/gitlab-bot:latest
+    image: registry.melroy.org/melroy/gitlab-bot/gitlab-bot:latest
     container_name: gitlab-bot
     restart: always
     networks:

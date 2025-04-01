@@ -1,14 +1,15 @@
-FROM node:lts-slim
+FROM registry.melroy.org/melroy/docker-images/pnpm:22
 ENV NODE_ENV production
 
 WORKDIR /app
 
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+COPY --chown=node:node package.json package.json
+COPY --chown=node:node pnpm-lock.yaml pnpm-lock.yaml
 
-RUN npm install --omit=dev
+RUN pnpm install --prod && \
+chown -R node:node node_modules
 
-COPY . .
+COPY --chown=node:node . .
 
 USER node
 
@@ -17,4 +18,4 @@ EXPOSE 3013
 HEALTHCHECK --interval=30s --timeout=12s --start-period=25s \
   CMD node healthcheck.js
 
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]

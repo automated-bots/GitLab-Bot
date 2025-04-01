@@ -50,7 +50,7 @@ if (isTelegramEnabled === 'true') {
       global.ErrorState = true
     })
     // This informs the Telegram servers of the new webhook.
-    bot.setWebHook(`${botUrl}/telegram/bot${TelegramSecretHash}`).catch((error) => {
+    bot.setWebHook(`${botUrl}/telegram/bot${global.TelegramSecretHash}`).catch((error) => {
       console.error(error)
       global.ErrorState = true
     })
