@@ -13,7 +13,7 @@ const router = express.Router()
 function sendMessage (bot, chatId, message, options = { parse_mode: 'MarkdownV2', disable_web_page_preview: true }) {
   bot.sendMessage(chatId, message, options).catch((error) => {
     logger.warn(`Message attempted to send (to chatID: ${chatId}): ${message}`)
-    logger.error('Error: Could not send message due to: ' + error.message)
+    logger.error('Could not send message due to: ' + error.message)
     // Set to error state
     global.ErrorState = true
   })

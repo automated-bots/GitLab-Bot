@@ -20,12 +20,12 @@ const logger = require('./logger')
 global.ErrorState = false
 
 if ((typeof secretToken === 'undefined') || secretToken === null || secretToken === '') {
-  logger.error('ERROR: GitLab Secret Token not provided but is required. Setup an .env file!')
+  logger.error('GitLab Secret Token not provided but is required. Setup an .env file!')
   process.exit(1)
 }
 
 if ((typeof gitlabTelegramMapping === 'undefined') || gitlabTelegramMapping === null || gitlabTelegramMapping === '') {
-  logger.error('ERROR: GitLab Telegram mapping object is empty. Setup an .env file!')
+  logger.error('GitLab Telegram mapping object is empty. Setup an .env file!')
   process.exit(1)
 }
 
