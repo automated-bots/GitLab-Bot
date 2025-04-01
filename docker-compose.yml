@@ -1,4 +1,3 @@
-version: "3"
 services:
   gitlab-bot:
     image: registry.melroy.org/melroy/gitlab-bot/gitlab-bot:latest
