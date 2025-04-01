@@ -64,7 +64,7 @@ Also notice you could _unselect_ the Push events (which is enabled by default).
 - [Node.js LTS](https://nodejs.org/en/download/)
 - [pnpm](https://pnpm.io/)
 
-## Install prerequisites
+### Install prerequisites
 
 Node.js:
 
