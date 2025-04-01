@@ -62,11 +62,21 @@ Also notice you could _unselect_ the Push events (which is enabled by default).
 ### Requirements
 
 - [Node.js LTS](https://nodejs.org/en/download/)
-- pnpm
+- [pnpm](https://pnpm.io/)
+
+## Install prerequisites
+
+Node.js:
 
 ```sh
 curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs
+```
+
+`pnpm` package manager:
+
+```sh
+curl -fsSL https://get.pnpm.io/install.sh | sh -
 ```
 
 ### Getting started
@@ -74,7 +84,7 @@ sudo apt-get install -y nodejs
 Assuming you already fulfilled the requirements above.
 
 1. Clone the project: `git clone git@gitlab.melroy.org:melroy/gitlab-bot.git`
-2. Install the NodeJS dependencies via: `pnpm install`
+2. Install the Node.JS dependencies via: `pnpm install`
 3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `URL`, `TELEGRAM_TOKEN`, `GITLAB_SECRET_TOKEN` and `GITLAB_TELEGRAM_CHAT_MAPPING` environment variables.
 4. To start the bot by executing: `pnpm start`
 
