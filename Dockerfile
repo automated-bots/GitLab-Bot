@@ -7,7 +7,7 @@ COPY --chown=node:node package.json package.json
 COPY --chown=node:node pnpm-lock.yaml pnpm-lock.yaml
 
 RUN pnpm install --prod && \
-chown -R node:node node_modules
+  chown -R node:node node_modules
 
 COPY --chown=node:node . .
 
