@@ -97,6 +97,10 @@ app.use((error, req, res, next) => {
 })
 
 // Start server
-app.listen(port, () => {
+app.listen(port, (error) => {
+  if (error) {
+    logger.fatal('Failed to start server:', error)
+    return
+  }
   logger.info(`GitLab-Telegram Bot service is now listening at http://localhost:${port}`)
 })
