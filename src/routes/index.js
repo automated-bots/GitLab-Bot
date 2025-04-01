@@ -1,7 +1,8 @@
-const express = require('express')
+import express from 'express'
+import telegramRoute from './telegram.js'
+import gitlabRoute from './gitlab.js'
+
 const router = express.Router()
-const telegramRoute = require('./telegram')
-const gitlabRoute = require('./gitlab')
 
 router.get('/', (req, res) => {
   res.json({ message: 'Welcome to the GitLab Webhooks to Telegram bot' })
@@ -15,4 +16,4 @@ router.get('/health', (req, res) => {
   res.status(errorCode).json({ result })
 })
 
-module.exports = router
+export default router

@@ -1,6 +1,7 @@
+import express from 'express'
+import logger from '../logger.js'
+
 const secretToken = process.env.GITLAB_SECRET_TOKEN
-const express = require('express')
-const logger = require('../logger')
 const router = express.Router()
 
 /**
@@ -192,4 +193,4 @@ router.post('/', (req, res) => {
   }
 })
 
-module.exports = router
+export default router

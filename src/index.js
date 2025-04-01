@@ -1,4 +1,11 @@
-require('dotenv').config()
+import 'dotenv/config'
+
+import createError from 'http-errors'
+import crypto from 'crypto'
+import TelegramBot from 'node-telegram-bot-api'
+import express from 'express'
+import routes from './routes/index.js'
+import logger from './logger.js'
 // NTBA = node-telegram-bot-api fixes
 process.env.NTBA_FIX_319 = 1
 process.env.NTBA_FIX_350 = 1
@@ -9,14 +16,7 @@ const gitlabTelegramMapping = process.env.GITLAB_TELEGRAM_CHAT_MAPPING
 const port = process.env.PORT || 3013
 const secretToken = process.env.GITLAB_SECRET_TOKEN
 const isTelegramEnabled = process.env.TELEGRAM_ENABLED || 'true'
-
-const createError = require('http-errors')
-const crypto = require('crypto')
 global.TelegramSecretHash = crypto.randomBytes(20).toString('hex')
-const TelegramBot = require('node-telegram-bot-api')
-const express = require('express')
-const routes = require('./routes')
-const logger = require('./logger')
 global.ErrorState = false
 
 if ((typeof secretToken === 'undefined') || secretToken === null || secretToken === '') {
@@ -104,3 +104,5 @@ app.listen(port, (error) => {
   }
   logger.info(`GitLab-Telegram Bot service is now listening at http://localhost:${port}`)
 })
+
+export default app

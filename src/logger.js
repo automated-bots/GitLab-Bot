@@ -1,4 +1,4 @@
-const pino = require('pino')
+import pino from 'pino'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
@@ -24,6 +24,6 @@ const envToLogger = {
   }
 }
 
-module.exports = pino(
+export default pino(
   envToLogger[NODE_ENV]
 )

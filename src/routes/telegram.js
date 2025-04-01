@@ -1,4 +1,4 @@
-const express = require('express')
+import express from 'express'
 const router = express.Router()
 
 // We are receiving updates at the route below
@@ -7,4 +7,4 @@ router.post(`/bot${global.TelegramSecretHash}`, (req, res) => {
   res.sendStatus(200)
 })
 
-module.exports = router
+export default router
