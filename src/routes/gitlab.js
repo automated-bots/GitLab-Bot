@@ -1,5 +1,6 @@
 const secretToken = process.env.GITLAB_SECRET_TOKEN
 const express = require('express')
+const logger = require('../logger')
 const router = express.Router()
 
 /**
@@ -11,8 +12,8 @@ const router = express.Router()
  */
 function sendMessage (bot, chatId, message, options = { parse_mode: 'MarkdownV2', disable_web_page_preview: true }) {
   bot.sendMessage(chatId, message, options).catch((error) => {
-    console.log(`WARN: Message attempted to send (to chatID: ${chatId}): ${message}`)
-    console.error('Error: Could not send message due to: ' + error.message)
+    logger.warn(`Message attempted to send (to chatID: ${chatId}): ${message}`)
+    logger.error('Error: Could not send message due to: ' + error.message)
     // Set to error state
     global.ErrorState = true
   })
@@ -155,7 +156,7 @@ router.post('/', (req, res) => {
                     }
                   }
                 } else {
-                  console.error('Error: Missing deployment status?')
+                  logger.error('Missing deployment status?')
                 }
               }
               break
@@ -174,20 +175,20 @@ router.post('/', (req, res) => {
                     }
                   }
                 } else {
-                  console.error('Error: Missing release event action, project name or git tag?')
+                  logger.error('Missing release event action, project name or git tag?')
                 }
               }
               break
           }
         }
       } else {
-        console.error('Error: Could not find project ID in the GitLab/Telegram mapping config. Skipping event. Body: ' + JSON.stringify(body))
+        logger.error('Could not find project ID in the GitLab/Telegram mapping config. Skipping event. Body: ' + JSON.stringify(body))
       }
     } else {
-      console.error('Error: Could not find project (project ID) for Webhook event. Skipping event. Body: ' + JSON.stringify(body))
+      logger.error('Could not find project (project ID) for Webhook event. Skipping event. Body: ' + JSON.stringify(body))
     }
   } else {
-    console.log('WARN: GitLab Secret Token mismatch!')
+    logger.warn('GitLab Secret Token mismatch!')
   }
 })
 
