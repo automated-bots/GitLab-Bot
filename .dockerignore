@@ -14,5 +14,4 @@ start_gitlab_bot.sh
 .gitignore
 .dockerignore
 .eslintrc.js
-.gitignore
 .gitlab-ci.yml
