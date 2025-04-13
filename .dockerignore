@@ -1,11 +1,18 @@
+# Config file
 .env
 
-node_modules/
-scripts/
-
-.git/
-.vscode/
-.gitlab-ci.yml
-nginx_example.conf
+scripts
+node_modules
 docker-compose.yml
+Dockerfile
+CODEOWNERS
+nginx_example.conf
 start_gitlab_bot.sh
+
+# Hidden files
+.git
+.gitignore
+.dockerignore
+.eslintrc.js
+.gitignore
+.gitlab-ci.yml
