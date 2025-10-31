@@ -1,5 +1,5 @@
 default:
-  image: registry.melroy.org/melroy/docker-images/pnpm:22
+  image: registry.melroy.org/melroy/docker-images/pnpm:24
 
   before_script:
     - pnpm install --prefer-offline --prefer-frozen-lockfile

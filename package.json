@@ -30,18 +30,18 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "http-errors": "^2.0.0",
     "node-telegram-bot-api": "^0.66.0",
-    "pino": "^9.6.0"
+    "pino": "^10.1.0"
   },
   "devDependencies": {
-    "eslint": "^9.24.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-n": "^17.17.0",
+    "eslint": "^9.38.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^17.23.1",
     "eslint-plugin-promise": "^7.2.1",
-    "neostandard": "^0.12.1",
-    "pino-pretty": "^13.0.0"
+    "neostandard": "^0.12.2",
+    "pino-pretty": "^13.1.2"
   }
 }
