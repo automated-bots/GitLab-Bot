@@ -13,19 +13,19 @@ process.env.NTBA_FIX_350 = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const botUrl = process.env.URL || 'localhost'
-const gitlabTelegramMapping = process.env.GITLAB_TELEGRAM_CHAT_MAPPING
 const port = process.env.PORT || 3013
+const gitlabTelegramMapping = process.env.GITLAB_TELEGRAM_CHAT_MAPPING
 const secretToken = process.env.GITLAB_SECRET_TOKEN
 const isTelegramEnabled = process.env.TELEGRAM_ENABLED || 'true'
 global.TelegramSecretHash = crypto.randomBytes(20).toString('hex')
 global.ErrorState = false
 
-if (typeof secretToken === 'undefined' || secretToken === null || secretToken === '') {
+if (!secretToken) {
   logger.error('GitLab Secret Token not provided but is required. Setup an .env file!')
   process.exit(1)
 }
 
-if (typeof gitlabTelegramMapping === 'undefined' || gitlabTelegramMapping === null || gitlabTelegramMapping === '') {
+if (!gitlabTelegramMapping) {
   logger.error('GitLab Telegram mapping object is empty. Setup an .env file!')
   process.exit(1)
 }
