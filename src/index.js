@@ -19,12 +19,12 @@ const isTelegramEnabled = process.env.TELEGRAM_ENABLED || 'true'
 global.TelegramSecretHash = crypto.randomBytes(20).toString('hex')
 global.ErrorState = false
 
-if ((typeof secretToken === 'undefined') || secretToken === null || secretToken === '') {
+if (typeof secretToken === 'undefined' || secretToken === null || secretToken === '') {
   logger.error('GitLab Secret Token not provided but is required. Setup an .env file!')
   process.exit(1)
 }
 
-if ((typeof gitlabTelegramMapping === 'undefined') || gitlabTelegramMapping === null || gitlabTelegramMapping === '') {
+if (typeof gitlabTelegramMapping === 'undefined' || gitlabTelegramMapping === null || gitlabTelegramMapping === '') {
   logger.error('GitLab Telegram mapping object is empty. Setup an .env file!')
   process.exit(1)
 }
@@ -65,7 +65,7 @@ if (isTelegramEnabled === 'true') {
 } else {
   // In debug mode, create our own fake bot
   const bot = {}
-  bot.setWebHook = (url, options = {}, fileOptions = {}) => { }
+  bot.setWebHook = (url, options = {}, fileOptions = {}) => {}
   bot.onText = (regexp, callback) => {}
   bot.sendMessage = (chatId, text, form = {}) => {
     return new Promise(function (resolve, reject) {
@@ -83,7 +83,11 @@ app.use('/', routes)
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
-  next(createError(404))
+  if (req.originalUrl.includes('favicon.ico')) {
+    res.sendStatus(404)
+  } else {
+    next(createError(404, 'Page not found: ' + req.originalUrl))
+  }
 })
 
 // Error handler
