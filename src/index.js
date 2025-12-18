@@ -1,10 +1,11 @@
+import 'dotenv/config'
+
 import createError from 'http-errors'
 import crypto from 'crypto'
 import TelegramBot from 'node-telegram-bot-api'
 import express from 'express'
 import routes from './routes/index.js'
 import logger from './logger.js'
-import 'dotenv/config'
 
 // NTBA = node-telegram-bot-api fixes
 process.env.NTBA_FIX_319 = 1
