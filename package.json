@@ -6,7 +6,7 @@
   "type": "module",
   "packageManager": "pnpm@10.26.0",
   "scripts": {
-    "start": "node .",
+    "start": "node --no-network-family-autoselection .",
     "lint": "eslint src --ext .js",
     "fix": "eslint src --ext .js --fix",
     "format": "prettier --check \"**/*.{js,ts}\"",
