@@ -4,7 +4,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development'
 
 const envToLogger = {
   development: {
-    level: process.env.PINO_LOG_LEVEL || 'debug',
+    level: process.env.LOG_LEVEL || 'debug',
     transport: {
       target: 'pino-pretty',
       options: {
@@ -14,7 +14,7 @@ const envToLogger = {
     }
   },
   production: {
-    level: process.env.PINO_LOG_LEVEL || 'info',
+    level: process.env.LOG_LEVEL || 'info',
     formatters: {
       level: (label) => {
         return { level: label }

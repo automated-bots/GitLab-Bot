@@ -5,12 +5,29 @@ This bot will handle the following events and inform you via Telegram about thos
 - Issues opened, re-opened & closed
 - Merge requests are opened, re-opened, closed or merged
 - Failing pipelines
+  - Optionally _also_ succeeding pipelines
+  - Optionally only on a specific branch (eg. `main`) pipelines
 - Successful deployments
 - New releases
 
 ## Production
 
 We will first explain how to use this setup in production. See below for running a development setup.
+
+## Environment variables
+
+| Variable name                | Required | Description                                                                                       | Default value PRD |
+| ---------------------------- | :------: | ------------------------------------------------------------------------------------------------- | :---------------: |
+| URL                          |    ❌    | The URL / domain of this bot.                                                                     |     localhost     |
+| PORT                         |    ❌    | Port number where the server is listening on                                                      |       3013        |
+| NODE_ENV                     |    ❌    | Node.js environment (eg. `production` or `development`)                                           |    production     |
+| LOG_LEVEL                    |    ❌    | Set the log level (eg. `debug` or `error`)                                                        |       info        |
+| TELEGRAM_TOKEN               |    ✅    | Telegram secret token                                                                             |    _Undefined_    |
+| GITLAB_SECRET_TOKEN          |    ✅    | GitLab secret token                                                                               |    _Undefined_    |
+| GITLAB_TELEGRAM_CHAT_MAPPING |    ✅    | GitLab/Telegram mapping. Use the GitLab project ID as key and the Telegram chat ID as value.      |    _Undefined_    |
+| GITLAB_PIPELINE_BRANCH_NAME  |    ❌    | Git branch name of the failing/succeeding pipeline (eg. `main`). By default report all pipelines. |    _Undefined_    |
+| GITLAB_PIPELINE_SHOW_SUCCESS |    ❌    | By default we _only_ report failing pipeline, also show succeeding pipelines if set to `true`.    |       false       |
+| TELEGRAM_ENABLED             |    ❌    | Whether Telegram connection should be made. Only useful when locally testing: `false`.            |       true        |
 
 ### Setup
 
@@ -88,6 +105,7 @@ Assuming you already fulfilled the requirements above.
 3. Prepare the `.env` (see [.env.example](.env.example) file), like setting the `URL`, `TELEGRAM_TOKEN`, `GITLAB_SECRET_TOKEN` and `GITLAB_TELEGRAM_CHAT_MAPPING` environment variables.
 4. To start the bot by executing: `pnpm start`
 
-The `GITLAB_TELEGRAM_CHAT_MAPPING` environment variable is a JSON object (with key/value pairs). The key is the GitLab project ID (eg. `42`) and the value is the corresponding Telegram chat ID (`@telegramgroup`). You can have multiple key/value pairs in a single object to serve multiple projects and telegram channels/groups.
+The `GITLAB_TELEGRAM_CHAT_MAPPING` environment variable is a JSON object (with key/value pairs). The key is the GitLab project ID (eg. `42`) and the value is the corresponding Telegram chat ID
+(`@telegramgroup`). You can have multiple key/value pairs in a single object to serve multiple projects and telegram channels/groups.
 
 _Hint:_ You can also disable the Telegram integration and use a fake Telegram bot. To use the fake bot set: `TELEGRAM_ENABLED=false` in the `.env` file.

@@ -2,6 +2,8 @@ import express from 'express'
 import logger from '../logger.js'
 
 const secretToken = process.env.GITLAB_SECRET_TOKEN
+const gitlabPipelineBranchName = process.env.GITLAB_PIPELINE_BRANCH_NAME
+const gitlabPipelineShowSuccess = process.env.GITLAB_PIPELINE_SHOW_SUCCESS || 'false'
 const router = express.Router()
 
 /**
@@ -143,25 +145,39 @@ router.post('/', (req, res) => {
               break
             case 'pipeline':
               {
-                // Only show failed pipelines
+                // Show pipeline status changes (failed/success), by default only sho failed pipelines
                 const item = body.object_attributes
                 const user = body.user
                 const commit = body.commit
                 if (Object.prototype.hasOwnProperty.call(item, 'status')) {
                   let msg = ''
                   const ref = convertValidMarkdownv2Format(item.ref)
+                  // If the branch is set and matches continue, otherwise skip
+                  if (gitlabPipelineBranchName && gitlabPipelineBranchName !== ref) {
+                    break
+                  }
+
                   const name = convertValidMarkdownv2Format(user.name)
                   const title = convertValidMarkdownv2Format(commit.title)
-                  switch (item.status) {
-                    case 'failed': // failed or success?
-                      msg += '❌ Pipeline [\\#' + item.id + '](' + item.url + ') on ' + ref + ' failed\\! '
-                      msg += 'From user: ' + name
-                      msg += ', with commit: ' + title
-                      if (body.merge_request != null && !isEmptyObject(body.merge_request)) {
-                        msg += '\\. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
-                      }
-                      sendMessage(bot, chatId, msg)
-                      break
+                  if (item.status === 'failed') {
+                    msg += '❌ Pipeline [\\#' + item.id + '](' + item.url + ') on ' + ref + ' failed\\! '
+                    msg += 'From user: ' + name
+                    msg += ', with commit: ' + title
+                    if (body.merge_request != null && !isEmptyObject(body.merge_request)) {
+                      msg += '\\. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
+                    }
+                    sendMessage(bot, chatId, msg)
+                  }
+
+                  // Optionally show succeeding pipelines also (if GITLAB_PIPELINE_SHOW_SUCCESS is set to 'true')
+                  if (item.status === 'success' && gitlabPipelineShowSuccess === 'true') {
+                    msg += '✅ Pipeline [\\#' + item.id + '](' + item.url + ') on ' + ref + ' succeeded\\! '
+                    msg += 'From user: ' + name
+                    msg += ', with commit: ' + title
+                    if (body.merge_request != null && !isEmptyObject(body.merge_request)) {
+                      msg += '\\. Part of MR [' + body.merge_request.iid + '](' + body.merge_request.url + ')'
+                    }
+                    sendMessage(bot, chatId, msg)
                   }
                 }
               }

@@ -1,17 +1,17 @@
-import 'dotenv/config'
-
 import createError from 'http-errors'
 import crypto from 'crypto'
 import TelegramBot from 'node-telegram-bot-api'
 import express from 'express'
 import routes from './routes/index.js'
 import logger from './logger.js'
+import 'dotenv/config'
+
 // NTBA = node-telegram-bot-api fixes
 process.env.NTBA_FIX_319 = 1
 process.env.NTBA_FIX_350 = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
-const botUrl = process.env.URL || 'https://gitlabbot.melroy.org'
+const botUrl = process.env.URL || 'localhost'
 const gitlabTelegramMapping = process.env.GITLAB_TELEGRAM_CHAT_MAPPING
 const port = process.env.PORT || 3013
 const secretToken = process.env.GITLAB_SECRET_TOKEN
