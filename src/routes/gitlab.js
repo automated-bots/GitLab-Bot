@@ -1,5 +1,6 @@
 import express from 'express'
 import logger from '../logger.js'
+import Misc from '../miscellaneous.js'
 
 const secretToken = process.env.GITLAB_SECRET_TOKEN
 const gitlabPipelineBranchName = process.env.GITLAB_PIPELINE_BRANCH_NAME
@@ -20,36 +21,6 @@ function sendMessage(bot, chatId, message, options = { parse_mode: 'MarkdownV2',
     // Set to error state
     global.ErrorState = true
   })
-}
-
-/**
- * Backslash all characters according to Telegram Markdown v2 specification
- * @param {String} input Any input string
- * @returns output in valid Telegram Markdownv2 format
- */
-function convertValidMarkdownv2Format(input) {
-  return input
-    .replaceAll('.', '\\.')
-    .replaceAll('-', '\\-')
-    .replaceAll('!', '\\!')
-    .replaceAll('+', '\\+')
-    .replaceAll('#', '\\#')
-    .replaceAll('*', '\\*')
-    .replaceAll('_', '\\_')
-    .replaceAll('(', '\\(')
-    .replaceAll(')', '\\)')
-    .replaceAll('~', '\\~')
-    .replaceAll('`', '\\~')
-    .replaceAll('|', '\\|')
-    .replaceAll('[', '\\[')
-    .replaceAll(']', '\\]')
-    .replaceAll('<', '\\<')
-    .replaceAll('>', '\\>')
-    .replaceAll('=', '\\=')
-    .replaceAll('{', '\\{')
-    .replaceAll('}', '\\}')
-    .replaceAll('=', '\\=')
-    .replaceAll('=', '\\=')
 }
 
 /**
@@ -86,8 +57,8 @@ router.post('/', (req, res) => {
                 const user = body.user
                 if (Object.prototype.hasOwnProperty.call(item, 'action')) {
                   let msg = ''
-                  const name = convertValidMarkdownv2Format(user.name)
-                  const title = convertValidMarkdownv2Format(item.title)
+                  const name = Misc.makeSafeMarkdownString(user.name)
+                  const title = Misc.makeSafeMarkdownString(item.title)
                   switch (item.action) {
                     case 'open':
                       msg += '🐞 New issue created by: ' + name
@@ -114,9 +85,8 @@ router.post('/', (req, res) => {
                 const item = body.object_attributes
                 const user = body.user
                 if (Object.prototype.hasOwnProperty.call(item, 'action')) {
-                  // I hope?
-                  const name = convertValidMarkdownv2Format(user.name)
-                  const title = convertValidMarkdownv2Format(item.title)
+                  const name = Misc.makeSafeMarkdownString(user.name)
+                  const title = Misc.makeSafeMarkdownString(item.title)
                   let msg = ''
                   switch (item.action) {
                     case 'open':
@@ -151,14 +121,14 @@ router.post('/', (req, res) => {
                 const commit = body.commit
                 if (Object.prototype.hasOwnProperty.call(item, 'status')) {
                   let msg = ''
-                  const ref = convertValidMarkdownv2Format(item.ref)
+                  const ref = Misc.makeSafeMarkdownString(item.ref)
                   // If the branch is set and matches continue, otherwise skip
                   if (gitlabPipelineBranchName && gitlabPipelineBranchName !== ref) {
                     break
                   }
 
-                  const name = convertValidMarkdownv2Format(user.name)
-                  const title = convertValidMarkdownv2Format(commit.title)
+                  const name = Misc.makeSafeMarkdownString(user.name)
+                  const title = Misc.makeSafeMarkdownString(commit.title)
                   if (item.status === 'failed') {
                     msg += '❌ Pipeline [\\#' + item.id + '](' + item.url + ') on ' + ref + ' failed\\! '
                     msg += 'From user: ' + name
@@ -189,7 +159,8 @@ router.post('/', (req, res) => {
                 if (status) {
                   switch (status) {
                     case 'success': {
-                      const msg = '🚀📦 Deployment job is successful\\! Deployed to ' + body.environment + ' at: [' + body.environment_external_url + '](' + body.environment_external_url + ')'
+                      const linkText = Misc.makeSafeMarkdownString(body.environment_external_url)
+                      const msg = '🚀📦 Deployment job is successful\\! Deployed to ' + body.environment + ' at: [' + linkText + '](' + body.environment_external_url + ')'
                       sendMessage(bot, chatId, msg)
                       break
                     }
@@ -203,12 +174,12 @@ router.post('/', (req, res) => {
               {
                 // Only show new releases (= 'create' action)!
                 const action = body.action
-                const projectName = convertValidMarkdownv2Format(body.project.name)
-                const tag = convertValidMarkdownv2Format(body.tag)
+                const projectName = Misc.makeSafeMarkdownString(body.project.name)
+                const tag = Misc.makeSafeMarkdownString(body.tag)
                 if (action && projectName && tag) {
                   switch (action) {
                     case 'create': {
-                      const msg = '📢🚀🎂 New release is out\\! ' + projectName + ' version ' + tag + ' \\- [Download now](' + body.url + ')'
+                      const msg = '📢🚀🎂 New release is out\\! ' + projectName + ' version ' + tag + ' \\- [See Release](' + body.url + ')'
                       sendMessage(bot, chatId, msg)
                       break
                     }
