@@ -4,7 +4,7 @@
   "description": "GitLab bot that interconnect GitLab with Telegram",
   "main": "src/index.js",
   "type": "module",
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "start": "node --no-network-family-autoselection .",
     "lint": "eslint src --ext .js",
@@ -32,20 +32,20 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
-    "dotenv": "^17.4.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "http-errors": "^2.0.1",
-    "node-telegram-bot-api": "^0.67.0",
+    "node-telegram-bot-api": "^1.2.0",
     "pino": "^10.3.1"
   },
   "devDependencies": {
-    "eslint": "^9.39.4",
+    "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^17.24.0",
-    "eslint-plugin-promise": "^7.2.1",
-    "neostandard": "^0.12.2",
+    "eslint-plugin-promise": "^7.3.0",
+    "neostandard": "^0.13.0",
     "pino-pretty": "^13.1.3",
-    "prettier": "^3.8.1"
+    "prettier": "^3.9.6"
   }
 }
