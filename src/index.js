@@ -2,14 +2,11 @@ import 'dotenv/config'
 
 import createError from 'http-errors'
 import crypto from 'crypto'
-import TelegramBot from 'node-telegram-bot-api'
+import { Bot } from 'node-telegram-bot-api'
 import express from 'express'
 import routes from './routes/index.js'
 import logger from './logger.js'
 
-// NTBA = node-telegram-bot-api fixes
-process.env.NTBA_FIX_319 = 1
-process.env.NTBA_FIX_350 = 1
 // constants
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN
 const botUrl = process.env.URL || 'localhost'
@@ -46,13 +43,13 @@ if (isTelegramEnabled === 'true') {
   try {
     const parsedMapping = JSON.parse(gitlabTelegramMapping)
 
-    const bot = new TelegramBot(TELEGRAM_TOKEN)
-    bot.on('error', (error) => {
+    const bot = new Bot(TELEGRAM_TOKEN)
+    bot.catch((error) => {
       logger.error(error)
       global.ErrorState = true
     })
     // This informs the Telegram servers of the new webhook.
-    bot.setWebHook(`${botUrl}/telegram/bot${global.TelegramSecretHash}`).catch((error) => {
+    bot.api.setWebhook({ url: `${botUrl}/telegram/bot${global.TelegramSecretHash}` }).catch((error) => {
       logger.error(error)
       global.ErrorState = true
     })
@@ -66,13 +63,11 @@ if (isTelegramEnabled === 'true') {
 } else {
   // In debug mode, create our own fake bot
   const bot = {}
-  bot.setWebHook = (url, options = {}, fileOptions = {}) => {}
-  bot.onText = (regexp, callback) => {}
-  bot.sendMessage = (chatId, text, form = {}) => {
-    return new Promise(function (resolve, reject) {
+  bot.handleUpdate = async (update) => {}
+  bot.api = {
+    sendMessage: async ({ chat_id: chatId, text }) => {
       logger.info(`Send messaged (just a drill)! Chat ID: ${chatId} with message: ${text}`)
-      resolve()
-    })
+    }
   }
   app.set('telegram_bot', bot)
 
@@ -102,7 +97,7 @@ app.use((error, req, res, next) => {
 })
 
 // Start server
-app.listen(port, (error) => {
+export const server = app.listen(port, (error) => {
   if (error) {
     logger.fatal('Failed to start server:', error)
     return

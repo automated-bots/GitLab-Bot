@@ -14,8 +14,8 @@ const router = express.Router()
  * @param {String} message Message string
  * @param {Object} options Telegram chat options (optional)
  */
-function sendMessage(bot, chatId, message, options = { parse_mode: 'MarkdownV2', disable_web_page_preview: true }) {
-  bot.sendMessage(chatId, message, options).catch((error) => {
+function sendMessage(bot, chatId, message, options = { parse_mode: 'MarkdownV2', link_preview_options: { is_disabled: true } }) {
+  bot.api.sendMessage({ chat_id: chatId, text: message, ...options }).catch((error) => {
     logger.warn(`Message attempted to send (to chatID: ${chatId}): ${message}`)
     logger.error('Could not send message due to: ' + error.message)
     // Set to error state

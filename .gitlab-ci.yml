@@ -23,4 +23,5 @@ format_lint:
   script:
     - pnpm run format
     - pnpm run lint
+    - pnpm test
   interruptible: true
