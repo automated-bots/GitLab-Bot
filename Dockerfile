@@ -19,4 +19,4 @@ EXPOSE 3013
 HEALTHCHECK --interval=30s --timeout=12s --start-period=25s \
   CMD node healthcheck.js
 
-CMD ["pnpm", "start"]
+CMD ["node", "--no-network-family-autoselection", "."]

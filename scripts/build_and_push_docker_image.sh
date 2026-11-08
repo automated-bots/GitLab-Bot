@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 docker build -t danger89/gitlab-bot:latest -t registry.melroy.org/melroy/gitlab-bot/gitlab-bot:latest .
 
 # Push the images to the DockerHub and the GitLab registry
