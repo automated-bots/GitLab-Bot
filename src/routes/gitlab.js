@@ -121,12 +121,12 @@ router.post('/', (req, res) => {
                 const commit = body.commit
                 if (Object.prototype.hasOwnProperty.call(item, 'status')) {
                   let msg = ''
-                  const ref = Misc.makeSafeMarkdownString(item.ref)
                   // If the branch is set and matches continue, otherwise skip
-                  if (gitlabPipelineBranchName && gitlabPipelineBranchName !== ref) {
+                  if (gitlabPipelineBranchName && gitlabPipelineBranchName !== item.ref) {
                     break
                   }
 
+                  const ref = Misc.makeSafeMarkdownString(item.ref)
                   const name = Misc.makeSafeMarkdownString(user.name)
                   const title = Misc.makeSafeMarkdownString(commit.title)
                   if (item.status === 'failed') {
