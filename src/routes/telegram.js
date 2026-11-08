@@ -2,8 +2,12 @@ import express from 'express'
 const router = express.Router()
 
 // We are receiving updates at the route below
-router.post(`/bot${global.TelegramSecretHash}`, (req, res) => {
-  req.app.get('telegram_bot').processUpdate(req.body)
+router.post('/bot:secret', async (req, res) => {
+  if (req.params.secret !== global.TelegramSecretHash) {
+    res.sendStatus(404)
+    return
+  }
+  await req.app.get('telegram_bot').handleUpdate(req.body)
   res.sendStatus(200)
 })
 

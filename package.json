@@ -10,7 +10,8 @@
     "lint": "eslint src --ext .js",
     "fix": "eslint src --ext .js --fix",
     "format": "prettier --check \"**/*.{js,ts}\"",
-    "format:fix": "prettier --write \"**/*.{js,ts}\""
+    "format:fix": "prettier --write \"**/*.{js,ts}\"",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -41,7 +42,6 @@
   "devDependencies": {
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^18.5.0",
     "eslint-plugin-promise": "^7.3.0",
     "neostandard": "^0.14.1",

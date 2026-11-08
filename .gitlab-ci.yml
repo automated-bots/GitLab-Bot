@@ -24,3 +24,9 @@ format_lint:
     - pnpm run format
     - pnpm run lint
   interruptible: true
+
+integration:
+  stage: test
+  script:
+    - pnpm test
+  interruptible: true
