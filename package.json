@@ -1,6 +1,6 @@
 {
   "name": "gitlab-bot",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "GitLab bot that interconnect GitLab with Telegram",
   "main": "src/index.js",
   "type": "module",
