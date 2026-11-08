@@ -54,7 +54,7 @@ exit 0
 `,
         { mode: 0o755 }
       )
-      const run = execute('bash', ['scripts/build_and_push_docker_image.sh'], {
+      const run = execute('sh', ['scripts/build_and_push_docker_image.sh'], {
         env: { ...process.env, PATH: `${directory}:${process.env.PATH}`, MOCK_LOG: logPath, MOCK_FAILURE: failure }
       })
       if (failure === 'none') await run

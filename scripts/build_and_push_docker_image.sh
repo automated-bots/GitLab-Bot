@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 docker build -t danger89/gitlab-bot:latest -t registry.melroy.org/melroy/gitlab-bot/gitlab-bot:latest .
 
