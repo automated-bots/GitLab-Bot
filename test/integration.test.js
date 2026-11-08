@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import express from 'express'
+import { once } from 'node:events'
 
 for (const enabled of ['true', 'false']) {
   test(`webhooks with Telegram enabled=${enabled}`, async () => {
@@ -25,14 +25,12 @@ for (const enabled of ['true', 'false']) {
       const result = method === 'getMe' ? { id: 123456, is_bot: true, first_name: 'Test', username: 'test_bot' } : true
       return Response.json({ ok: true, result })
     }
-    const originalListen = express.application.listen
     let server
-    express.application.listen = function (...args) {
-      server = originalListen.apply(this, args)
-      return server
-    }
     try {
-      await import(`../src/index.js?enabled=${enabled}`)
+      const module = await import(`../src/index.js?enabled=${enabled}`)
+      server = module.server
+      const app = module.default
+      if (!server.listening) await once(server, 'listening')
       const base = `http://127.0.0.1:${server.address().port}`
       const request = (path, body, token = 'test-secret') =>
         originalFetch(`${base}${path}`, {
@@ -68,12 +66,23 @@ for (const enabled of ['true', 'false']) {
         assert.match(messages[0].body.text, /Test issue/)
         assert.equal(messages[0].body.parse_mode, 'MarkdownV2')
         assert.deepEqual(JSON.parse(messages[0].body.link_preview_options), { is_disabled: true })
+        const release = { object_kind: 'release', project: { id: 42, name: 'Test project' }, action: 'create', tag: 'v2.0.0', url: 'https://example.test/releases/v2' }
+        assert.equal((await request('/gitlab', release)).status, 200)
+        const releaseMessages = requests.filter((item) => item.method === 'sendMessage')
+        assert.equal(releaseMessages.length, 2)
+        assert.ok(releaseMessages[1].body.text.includes('v2\\.0\\.0'))
+        await request('/gitlab', { ...release, project: { id: 99, name: 'Unmapped' } })
+        assert.equal(requests.filter((item) => item.method === 'sendMessage').length, 2)
+        app.get('telegram_bot').use(() => {
+          throw new Error('simulated handler failure')
+        })
+        assert.equal((await request(`/telegram/bot${global.TelegramSecretHash}`, { update_id: 2 })).status, 200)
+        assert.equal((await originalFetch(`${base}/health`)).status, 500)
       } else {
         assert.equal(requests.length, 0)
       }
     } finally {
       global.fetch = originalFetch
-      express.application.listen = originalListen
       if (server) await new Promise((resolve) => server.close(resolve))
     }
   })

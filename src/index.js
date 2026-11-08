@@ -98,7 +98,7 @@ app.use((error, req, res, next) => {
 })
 
 // Start server
-app.listen(port, (error) => {
+export const server = app.listen(port, (error) => {
   if (error) {
     logger.fatal('Failed to start server:', error)
     return
