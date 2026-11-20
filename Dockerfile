@@ -1,4 +1,4 @@
-FROM registry.melroy.org/melroy/docker-images/pnpm:24
+FROM registry.melroy.org/melroy/docker-images/pnpm:26
 ENV NODE_ENV=production
 
 WORKDIR /app
